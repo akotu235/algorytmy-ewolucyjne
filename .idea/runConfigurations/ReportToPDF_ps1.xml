@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ReportToPDF.ps1" type="PowerShellRunType" factoryName="PowerShell" scriptUrl="$PROJECT_DIR$/ReportToPDF.ps1" scriptParameters="-reportFile &quot;.\report.md&quot; -outputFile &quot;./../algorytmy-ewolucyjne_Andrzej_Kotulski.pdf&quot;" executablePath="$PROJECT_DIR$/../../../../../../../../Windows/System32/WindowsPowerShell/v1.0/powershell.exe">
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>
