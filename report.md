@@ -8,23 +8,23 @@
 
 
 ## 1. Zasada działania i zastosowania
-**Algorytm ewolucyjny** (ang. evolutionary algorithm) to metoda optymalizacji inspirowana mechanizmami ewolucji biologicznej, takimi jak dziedziczenie, mutacja, krzyżowanie oraz selekcja naturalna. Algorytm działa na populacji potencjalnych rozwiązań problemu, które są kodowane w formie genotypów (zbiorów cech). Każde rozwiązanie jest oceniane przy użyciu funkcji celu (fitness), która mierzy jego "przystosowanie" w kontekście optymalizacji. Proces ewolucji składa się z kilku kluczowych etapów:
+**Algorytm ewolucyjny** (ang. evolutionary algorithm) to&nbsp;metoda optymalizacji inspirowana mechanizmami ewolucji biologicznej, takimi jak dziedziczenie, mutacja, krzyżowanie oraz selekcja naturalna. Algorytm działa na&nbsp;populacji potencjalnych rozwiązań problemu, które są&nbsp;kodowane w&nbsp;formie genotypów (zbiorów cech). Każde rozwiązanie jest oceniane przy użyciu funkcji celu (fitness), która mierzy jego "przystosowanie" w kontekście optymalizacji. Proces ewolucji składa się z&nbsp;kilku kluczowych etapów:
 
 1.	**Inicjalizacja**: Generowanie początkowej populacji rozwiązań.
 
-2. **Ocena**: Każdy osobnik w populacji jest oceniany przy użyciu funkcji fitness, co pozwala ocenić jakość każdego rozwiązania.
+2. **Ocena**: Każdy osobnik w&nbsp;populacji jest oceniany przy użyciu funkcji fitness, co&nbsp;pozwala ocenić jakość każdego rozwiązania.
 
-3. **Selekcja**: Wybór najlepiej przystosowanych osobników do reprodukcji na podstawie wyników fitness.
+3. **Selekcja**: Wybór najlepiej przystosowanych osobników do&nbsp;reprodukcji na&nbsp;podstawie wyników fitness.
 
-4. **Krzyżowanie i mutacja**: Procesy inspirowane biologiczną ewolucją, które tworzą nowe rozwiązania (potomków) poprzez kombinację cech rodziców i losowe zmiany (mutacje).
+4. **Krzyżowanie i mutacja**: Procesy inspirowane biologiczną ewolucją, które tworzą nowe rozwiązania (potomków) poprzez kombinację cech rodziców i&nbsp;losowe zmiany (mutacje).
 
-5. **Zastępowanie**: Nowe rozwiązania zastępują część populacji, a proces jest powtarzany iteracyjnie aż do osiągnięcia zadanych kryteriów zakończenia, np. liczby iteracji lub ustabilizowania się wartości fitness.
+5. **Zastępowanie**: Nowe rozwiązania zastępują część populacji, a&nbsp;proces jest powtarzany iteracyjnie aż&nbsp;do&nbsp;osiągnięcia zadanych kryteriów zakończenia, np.&nbsp;liczby iteracji lub ustabilizowania się wartości fitness.
 
-Algorytmy ewolucyjne znajdują zastosowanie w wielu dziedzinach. Jednym z ich głównych zastosowań jest sztuczna inteligencja, gdzie algorytmy ewolucyjne są wykorzystywane do trenowania modeli neuronowych (algorytmy neuroewolucji). Dzięki adaptacyjnemu charakterowi mogą one automatycznie optymalizować architekturę sieci neuronowych oraz ich parametry [1].
+Algorytmy ewolucyjne znajdują zastosowanie w&nbsp;wielu dziedzinach. Jednym z&nbsp;ich głównych zastosowań jest sztuczna inteligencja, gdzie algorytmy ewolucyjne są&nbsp;wykorzystywane do&nbsp;trenowania modeli neuronowych (algorytmy neuroewolucji). Dzięki adaptacyjnemu charakterowi mogą one automatycznie optymalizować architekturę sieci neuronowych oraz ich parametry [1].
 
-Kolejnym obszarem jest optymalizacja wielokryterialna, gdzie rozwiązania muszą spełniać wiele, często sprzecznych wymagań. Przykładami takich problemów są optymalizacja zasobów w systemach inżynieryjnych oraz projektowanie efektywnych sieci telekomunikacyjnych [2].
+Kolejnym obszarem jest optymalizacja wielokryterialna, gdzie rozwiązania muszą spełniać wiele, często sprzecznych wymagań. Przykładami takich problemów są optymalizacja zasobów w&nbsp;systemach inżynieryjnych oraz projektowanie efektywnych sieci telekomunikacyjnych [2].
 
-Zastosowanie algorytmów ewolucyjnych w logistyce obejmuje m.in. problemy trasowania pojazdów, optymalizację transportu oraz zarządzanie magazynem. Złożoność tych problemów sprawia, że tradycyjne metody optymalizacyjne są często niewystarczające, a algorytmy inspirowane ewolucją oferują efektywne podejście do ich rozwiązywania [2, 3].
+Zastosowanie algorytmów ewolucyjnych w&nbsp;logistyce obejmuje m.in.&nbsp;problemy trasowania pojazdów, optymalizację transportu oraz zarządzanie magazynem. Złożoność tych problemów sprawia, że&nbsp;tradycyjne metody optymalizacyjne są&nbsp;często niewystarczające, a&nbsp;algorytmy inspirowane ewolucją oferują efektywne podejście do&nbsp;ich rozwiązywania [2, 3].
 
 
 ## 2. Biblioteki programistyczne
@@ -33,18 +33,18 @@ Zastosowanie algorytmów ewolucyjnych w logistyce obejmuje m.in. problemy trasow
 
 **Instalacja**:
 
-`DEAP` jest dostępna poprzez menedżer pakietów Pythona, co umożliwia jej łatwą instalację i integrację z istniejącymi projektami.
+`DEAP` jest dostępna poprzez menedżer pakietów Pythona, co&nbsp;umożliwia jej łatwą instalację i&nbsp;integrację z&nbsp;istniejącymi projektami.
 
 **Możliwości**:
 
-`DEAP` oferuje elastyczną platformę do tworzenia algorytmów ewolucyjnych, takich jak:
+`DEAP` oferuje elastyczną platformę do&nbsp;tworzenia algorytmów ewolucyjnych, takich jak:
 
 * Algorytmy genetyczne (`GA`)
 * Programowanie genetyczne (`GP`)
 * Strategie ewolucyjne (`ES`)
 * Algorytmy ewolucji różnicowej (`DE`)
 
-Obsługuje niestandardowe genotypy, funkcje fitness oraz operatory, a także umożliwia wizualizację wyników.
+Obsługuje niestandardowe genotypy, funkcje fitness oraz operatory, a&nbsp;także umożliwia wizualizację wyników.
 
 **Zalety**:
 
@@ -61,17 +61,17 @@ Obsługuje niestandardowe genotypy, funkcje fitness oraz operatory, a także umo
 
 **Instalacja**:
 
-`Jenetics` można zainstalować, dodając odpowiednią zależność do pliku konfiguracyjnego projektu opartego na Mavenie lub Gradle, co ułatwia zarządzanie biblioteką i jej wersjami w środowisku Java.
+`Jenetics` można zainstalować, dodając odpowiednią zależność do&nbsp;pliku konfiguracyjnego projektu opartego na&nbsp;Mavenie lub Gradle, co&nbsp;ułatwia zarządzanie biblioteką i&nbsp;jej wersjami w&nbsp;środowisku Java.
 
 **Możliwości**:
 
-`Jenetics` umożliwia implementację algorytmów genetycznych z prostym API, oferując wsparcie dla:
+`Jenetics` umożliwia implementację algorytmów genetycznych z&nbsp;prostym API, oferując wsparcie dla:
 
 * Algorytmów genetycznych (`GA`)
 * Algorytmów ewolucji różnicowej (`DE`)
 * Algorytmów wielokryterialnych (`NSGA-II`, `SPEA2`)
 
-Obsługuje paralelizację, co zwiększa wydajność.
+Obsługuje paralelizację, co&nbsp;zwiększa wydajność.
 
 **Zalety**:
 
@@ -102,9 +102,9 @@ Obsługuje paralelizację, co zwiększa wydajność.
 
 1. **K. O. Stanley i R. Miikkulainen, Evolving Neural Networks through Augmenting Topologies**, MIT Press, 2002. 
 
-2. **J. H. Holland, Adaptation in Natural and Artificial Systems: An Introductory Analysis with Applications to Biology, Control, and Artificial Intelligence**, MIT Press, 1992. 
+2. **J. H. Holland, Adaptation in Natural and Artificial Systems: An&nbsp;Introductory Analysis with Applications to&nbsp;Biology, Control, and Artificial Intelligence**, MIT Press, 1992. 
 
-3. **D. E. Goldberg, Genetic Algorithms in Search, Optimization, and Machine Learning**, Addison-Wesley, 1989. 
+3. **D. E. Goldberg, Genetic Algorithms in&nbsp;Search, Optimization, and&nbsp;Machine Learning**, Addison-Wesley, 1989. 
 
 ## Załączniki
 
