@@ -1,5 +1,6 @@
 package io.github.akotu235.tsp.optimization;
 
+import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
 import io.github.akotu235.tsp.model.CostMatrix;
 import io.github.akotu235.tsp.model.DataModel;
@@ -10,6 +11,7 @@ import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -17,37 +19,54 @@ import java.util.function.Function;
 
 public class RouteOptimizer {
     private final DataModel dataModel;
+    private final Chart chart;
 
     public RouteOptimizer(DataModel dataModel) {
         this.dataModel = dataModel;
+        this.chart = new Chart();
+        this.chart.setSize(800, 600);
+        this.chart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.chart.setVisible(true);
     }
 
-    public Route findBestRoute() {
-        // Definicja fabryki chromosomów (ścieżek)
-        Genotype<EnumGene<Integer>> genotypeFactory = Genotype.of(PermutationChromosome.ofInteger(dataModel.getNodeCount()));
+    public void findBestRoute() {
+        new Thread(() -> {
+            // Definicja fabryki chromosomów (ścieżek)
+            Genotype<EnumGene<Integer>> genotypeFactory = Genotype.of(PermutationChromosome.ofInteger(dataModel.getNodeCount()));
 
-        // Funkcja oceny fitness (minimalizacja długości trasy)
-        Function<Genotype<EnumGene<Integer>>, Double> fitnessFunction = genotype -> calculateRouteLength(genotype, dataModel.getCostMatrix());
+            // Funkcja oceny fitness (minimalizacja długości trasy)
+            Function<Genotype<EnumGene<Integer>>, Double> fitnessFunction = genotype -> calculateRouteLength(genotype, dataModel.getCostMatrix());
 
-        // Konfiguracja i uruchomienie silnika genetycznego
-        Engine<EnumGene<Integer>, Double> engine = Engine.builder(fitnessFunction, genotypeFactory)
-                .populationSize(GeneticAlgorithmConfig.POPULATION_SIZE)
-                .optimize(Optimize.MINIMUM)
-                .alterers(
-                        new SwapMutator<>(GeneticAlgorithmConfig.MUTATION_PROBABILITY),
-                        new PartiallyMatchedCrossover<>(GeneticAlgorithmConfig.PMX_CROSSOVER_PROBABILITY)
-                )
-                .build();
+            // Konfiguracja i uruchomienie silnika genetycznego
+            Engine<EnumGene<Integer>, Double> engine = Engine.builder(fitnessFunction, genotypeFactory)
+                    .populationSize(GeneticAlgorithmConfig.POPULATION_SIZE)
+                    .optimize(Optimize.MINIMUM)
+                    .alterers(
+                            new SwapMutator<>(GeneticAlgorithmConfig.MUTATION_PROBABILITY),
+                            new PartiallyMatchedCrossover<>(GeneticAlgorithmConfig.PMX_CROSSOVER_PROBABILITY)
+                    )
+                    .build();
 
-        // Uruchomienie ewolucji
-        Phenotype<EnumGene<Integer>, Double> result = engine.stream()
-                .limit(Limits.bySteadyFitness(GeneticAlgorithmConfig.STEADY_FITNESS_GENERATION_LIMIT))
-                .limit(GeneticAlgorithmConfig.GENERATION_LIMIT)
-                .peek(this::printBestOfGeneration)
-                .collect(EvolutionResult.toBestPhenotype());
+            // Uruchomienie ewolucji
+            Phenotype<EnumGene<Integer>, Double> result = engine.stream()
+                    .limit(Limits.bySteadyFitness(GeneticAlgorithmConfig.STEADY_FITNESS_GENERATION_LIMIT))
+                    .limit(GeneticAlgorithmConfig.GENERATION_LIMIT)
+                    .peek(this::printBestOfGeneration)
+                    .peek(this::updateChart)
+                    .collect(EvolutionResult.toBestPhenotype());
 
-        // Zwrócenie najlepszego rozwiązania
-        return convertPhenotypeToRoute(result);
+            //Zapis wykresu do pliku
+            chart.saveToFile();
+
+            // Wyświetlenie najlepszego rozwiązania
+            System.out.println(convertPhenotypeToRoute(result));
+        }).start();
+    }
+
+    private void updateChart(EvolutionResult<EnumGene<Integer>, Double> result) {
+        SwingUtilities.invokeLater(() -> {
+            chart.updateChart(result.generation(), result.bestFitness());
+        });
     }
 
     //Funkcja fitness
