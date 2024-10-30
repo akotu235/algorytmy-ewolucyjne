@@ -64,8 +64,14 @@ public class RouteOptimizer {
     }
 
     private void updateChart(EvolutionResult<EnumGene<Integer>, Double> result) {
+        double bestFitness = result.bestFitness();
+        double worstFitness = result.worstFitness();
+        double averageFitness = result.population().stream()
+                .mapToDouble(Phenotype::fitness)
+                .average()
+                .orElse(0.0);
         SwingUtilities.invokeLater(() -> {
-            chart.updateChart(result.generation(), result.bestFitness());
+            chart.updateChart(result.generation(), bestFitness, averageFitness, worstFitness);
         });
     }
 

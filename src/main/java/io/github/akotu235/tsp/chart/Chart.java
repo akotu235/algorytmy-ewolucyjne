@@ -15,22 +15,30 @@ import java.io.File;
 import java.io.IOException;
 
 public class Chart extends JFrame {
-    private final XYSeries series;
+    private final XYSeries bestSeries;
+    private final XYSeries avgSeries;
+    private final XYSeries worstSeries;
     private final JFreeChart chart;
     private double minY = Double.MAX_VALUE;
     private double maxY = Double.MIN_VALUE;
 
     public Chart() {
-        series = new XYSeries("Najlepszy Wynik");
-        XYSeriesCollection dataset = new XYSeriesCollection(series);
+        bestSeries = new XYSeries("Najlepszy Wynik");
+        avgSeries = new XYSeries("Średni Wynik");
+        worstSeries = new XYSeries("Najgorszy Wynik");
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(bestSeries);
+        dataset.addSeries(avgSeries);
+        dataset.addSeries(worstSeries);
 
         chart = ChartFactory.createXYLineChart(
                 "Postęp w Optymalizacji",
                 "Generacja",
-                "Najlepszy Wynik",
+                "Wartość Fitness",
                 dataset,
                 PlotOrientation.VERTICAL,
-                false,
+                true,
                 true,
                 false
         );
@@ -40,15 +48,13 @@ public class Chart extends JFrame {
         setContentPane(chartPanel);
     }
 
-    public void updateChart(long generation, double bestFitness) {
-        series.add(generation, bestFitness);
+    public void updateChart(long generation, double bestFitness, double averageFitness, double worstFitness) {
+        bestSeries.add(generation, bestFitness);
+        avgSeries.add(generation, averageFitness);
+        worstSeries.add(generation, worstFitness);
 
-        if (bestFitness < minY) {
-            minY = bestFitness;
-        }
-        if (bestFitness > maxY) {
-            maxY = bestFitness;
-        }
+        if (bestFitness < minY) minY = bestFitness;
+        if (worstFitness > maxY) maxY = worstFitness;
 
         double range = maxY - minY;
         double margin = range * 0.1;
