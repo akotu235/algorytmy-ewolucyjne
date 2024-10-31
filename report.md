@@ -1,14 +1,14 @@
-### Sztuczna inteligencja i systemy ekspertowe
+### Sztuczna Inteligencja i Systemy Ekspertowe
 # Algorytmy Ewolucyjne
 ## *Zasada działania, obszary zastosowań, biblioteki programistyczne, zastosowanie do wybranego problemu optymalizacyjnego oraz eksperymenty*
-### **Andrzej Kotulski**
-**WSZiB**, 2024
+## [**Andrzej Kotulski**](https://akotu235.github.io/)
+[**WSZiB**](https://www.wszib.edu.pl/), 2024
 
 ---
 
 
 ## 1. Zasada działania i zastosowania
-**Algorytm ewolucyjny** (ang. evolutionary algorithm) to&nbsp;metoda optymalizacji inspirowana mechanizmami ewolucji biologicznej, takimi jak dziedziczenie, mutacja, krzyżowanie oraz selekcja naturalna. Algorytm działa na&nbsp;populacji potencjalnych rozwiązań problemu, które są&nbsp;kodowane w&nbsp;formie genotypów (zbiorów cech). Każde rozwiązanie jest oceniane przy użyciu funkcji celu (fitness), która mierzy jego "przystosowanie" w kontekście optymalizacji. Proces ewolucji składa się z&nbsp;kilku kluczowych etapów:
+**Algorytm ewolucyjny** (ang.&nbsp;evolutionary algorithm) to&nbsp;metoda optymalizacji inspirowana mechanizmami ewolucji biologicznej, takimi jak dziedziczenie, mutacja, krzyżowanie oraz selekcja naturalna. Algorytm działa na&nbsp;populacji potencjalnych rozwiązań problemu, które są&nbsp;kodowane w&nbsp;formie genotypów (zbiorów cech). Każde rozwiązanie jest oceniane przy użyciu funkcji celu (fitness), która mierzy jego "przystosowanie" w&nbsp;kontekście optymalizacji. Proces ewolucji składa się z&nbsp;kilku kluczowych etapów:
 
 1.	**Inicjalizacja**: Generowanie początkowej populacji rozwiązań.
 
@@ -20,11 +20,11 @@
 
 5. **Zastępowanie**: Nowe rozwiązania zastępują część populacji, a&nbsp;proces jest powtarzany iteracyjnie aż&nbsp;do&nbsp;osiągnięcia zadanych kryteriów zakończenia, np.&nbsp;liczby iteracji lub ustabilizowania się wartości fitness.
 
-Algorytmy ewolucyjne znajdują zastosowanie w&nbsp;wielu dziedzinach. Jednym z&nbsp;ich głównych zastosowań jest sztuczna inteligencja, gdzie algorytmy ewolucyjne są&nbsp;wykorzystywane do&nbsp;trenowania modeli neuronowych (algorytmy neuroewolucji). Dzięki adaptacyjnemu charakterowi mogą one automatycznie optymalizować architekturę sieci neuronowych oraz ich parametry [1].
+Algorytmy ewolucyjne znajdują zastosowanie w&nbsp;wielu dziedzinach. Jednym z&nbsp;ich głównych zastosowań jest sztuczna inteligencja, gdzie algorytmy ewolucyjne są&nbsp;wykorzystywane do&nbsp;trenowania modeli neuronowych (algorytmy neuroewolucji). Dzięki adaptacyjnemu charakterowi mogą one automatycznie optymalizować architekturę sieci neuronowych oraz ich parametry [[1]](#bibliografia).
 
-Kolejnym obszarem jest optymalizacja wielokryterialna, gdzie rozwiązania muszą spełniać wiele, często sprzecznych wymagań. Przykładami takich problemów są optymalizacja zasobów w&nbsp;systemach inżynieryjnych oraz projektowanie efektywnych sieci telekomunikacyjnych [2].
+Kolejnym obszarem jest optymalizacja wielokryterialna, gdzie rozwiązania muszą spełniać wiele, często sprzecznych wymagań. Przykładami takich problemów są optymalizacja zasobów w&nbsp;systemach inżynieryjnych oraz projektowanie efektywnych sieci telekomunikacyjnych [[2]](#bibliografia).
 
-Zastosowanie algorytmów ewolucyjnych w&nbsp;logistyce obejmuje m.in.&nbsp;problemy trasowania pojazdów, optymalizację transportu oraz zarządzanie magazynem. Złożoność tych problemów sprawia, że&nbsp;tradycyjne metody optymalizacyjne są&nbsp;często niewystarczające, a&nbsp;algorytmy inspirowane ewolucją oferują efektywne podejście do&nbsp;ich rozwiązywania [2, 3].
+Zastosowanie algorytmów ewolucyjnych w&nbsp;logistyce obejmuje m.in.&nbsp;problemy trasowania pojazdów, optymalizację transportu oraz zarządzanie magazynem. Złożoność tych problemów sprawia, że&nbsp;tradycyjne metody optymalizacyjne są&nbsp;często niewystarczające, a&nbsp;algorytmy inspirowane ewolucją oferują efektywne podejście do&nbsp;ich rozwiązywania [[2, 3]](#bibliografia).
 
 
 ## 2. Biblioteki programistyczne
@@ -57,7 +57,7 @@ Obsługuje niestandardowe genotypy, funkcje fitness oraz operatory, a&nbsp;takż
 * Krzywa uczenia się dla początkujących.
 * Potencjalnie wolniejsza wydajność przy dużych populacjach.
 
-## 2.2. Jenetics (Java)
+### 2.2. Jenetics (Java)
 
 **Instalacja**:
 
@@ -86,8 +86,97 @@ Obsługuje paralelizację, co&nbsp;zwiększa wydajność.
 
 ## 3. Zaimplementowany algorytm rozwiązujący wybrany problem optymalizacyjny
 
-*[opis wybranego problemu optymalizacyjnego (np. optymalizacja funkcji, komiwojażer, generowanie optymalnych konstrukcji (np. <http://www.boxcar2d.com/>), optymalizacja wielokryterialna, wielokryterialna optymalizacja trasy drona/statku z uwzględnieniem przeszkód/pogody) oraz szczegółowy opis algorytmu ewolucyjnego użytego do jego rozwiązania: pseudokod wraz z opisem słownym, sposób reprezentacji rozwiązania w genotypie osobnika, wartości parametrów (liczebność populacji, prawdopodobieństwa mutacji i rekombinacji oraz inne w zależności od użytego algorytmu) wraz z komentarzami]*
+**Wybrany problem**: 
+Problem komiwojażera
 
+**Opis problemu**: 
+Problem komiwojażera polega na znalezieniu najkrótszej trasy, którą komiwojażer odwiedzi każde miasto dokładnie raz i&nbsp;wróci do&nbsp;punktu początkowego. Jest to&nbsp;klasyczny problem optymalizacyjny, w&nbsp;którym poszukuje się minimalnej długości trasy.
+
+**Algorytm**: 
+Algorytm genetyczny z&nbsp;użyciem biblioteki `Jenetics`
+
+**Przygotowanie danych**:
+Aby dostarczyć algorytmowi genetycznemu odpowiednie dane wejściowe, generowany jest obiekt `DataModel`, zawierający informacje o&nbsp;miastach i&nbsp;kosztach tras między nimi. Proces przygotowania danych obejmuje następujące kroki:
+
+1. **Pobieranie nazw miast**:
+Program przyjmuje listę nazw miast, która będzie służyła jako punkty docelowe w&nbsp;problemie komiwojażera.
+
+2. **Pobieranie współrzędnych geograficznych**:
+Dla każdego miasta program pobiera współrzędne geograficzne (szerokość i&nbsp;długość geograficzną) za&nbsp;pomocą `API Nominatim` [[7]](#bibliografia). Współrzędne te&nbsp;pozwalają na&nbsp;dokładne określenie położenia miast, co&nbsp;jest kluczowe dla wyznaczania odległości między nimi.
+
+3. **Obliczanie kosztów tras między miastami**:
+Na podstawie pobranych współrzędnych każdej pary miast wyznaczany jest koszt trasy (długość drogi samochodowej) z&nbsp;wykorzystaniem `API OSRM` [[8]](#bibliografia). Koszty te&nbsp;są&nbsp;następnie zapisywane w&nbsp;postaci macierzy kosztów (`costMatrix`), gdzie każda komórka określa koszt przejścia między dwiema lokacjami. Macierz ta&nbsp;jest symetryczna, ponieważ trasa między dwoma miastami ma&nbsp;ten sam koszt w&nbsp;obu kierunkach.
+
+4. **Budowanie modelu danych**:
+Powstały obiekt `DataModel` zawiera trzy kluczowe elementy:
+   * `nodes` — listę miast (węzłów), reprezentujących poszczególne lokalizacje.
+   * `costMatrix` — macierz kosztów tras między miastami.
+   * `costUnit` — jednostkę kosztu, która może być kilometrami lub milami, zależnie od&nbsp;ustawień `API OSRM`.
+
+5. **Zapis danych do pliku**:
+Obiekt `DataModel` jest zapisywany do&nbsp;pliku, który wczytany jest przez aplikację z&nbsp;algorytmem genetycznym. Dzięki temu proces przygotowania danych może być wykonany jednorazowo, a&nbsp;algorytm uruchamiany wielokrotnie bez konieczności ponownego pobierania i&nbsp;przetwarzania danych.
+
+**Pseudokod**:
+
+1. **Inicjalizacja**
+    * Wczytaj dane dla algorytmu `DataModel`
+    * Utwórz populację początkową genotypów (ścieżek) o&nbsp;rozmiarze `POPULATION_SIZE`.
+    * Każdy genotyp to&nbsp;permutacja miast.
+
+2. **Definicja funkcji oceny (fitness)**
+   * Dla każdej ścieżki (genotypu) oblicz jej długość:
+     * Sumuj odległości między kolejnymi miastami w&nbsp;ścieżce. 
+     * Dodaj odległość powrotu do&nbsp;miasta początkowego. 
+   * Wynikowa długość jest wartością fitness (im&nbsp;mniejsza, tym lepiej).
+
+3. **Ewolucja populacji**
+   * Powtórz, aż&nbsp;spełnione zostanie kryterium stopu (np.&nbsp;limit generacji lub stabilizacja fitnessu):
+     * **Wybierz** osobniki do&nbsp;krzyżowania.
+     * **Rekombinacja (crossover)**: dla wybranych par rodziców zastosuj operator PMX, by&nbsp;wymienić fragmenty ich genotypów i&nbsp;uzyskać nowe potomstwo.
+     * **Mutacja**: dla każdego potomka, z&nbsp;prawdopodobieństwem `MUTATION_PROBABILITY`, zamień dwa losowo wybrane miasta w&nbsp;trasie.
+     * **Zastąp** starą populację osobnikami wybranymi na&nbsp;podstawie ich fitnessu.
+
+4. **Aktualizacja najlepszych wyników**
+   * Zapisz i&nbsp;wyświetl najlepszą ścieżkę (trasę) w&nbsp;każdej generacji.
+   * Aktualizuj wykres.
+
+5. **Zakończenie**
+   * Wyświetl ostateczne rozwiązanie — najlepszą znalezioną trasę i&nbsp;jej długość.
+   * Zapisz wykres do&nbsp;pliku.
+
+   
+**Szczegóły implementacji**:
+
+1. **Reprezentacja rozwiązania**:
+Genotyp osobnika stanowi permutację miast, która odzwierciedla kolejność ich odwiedzin. Z&nbsp;kolei chromosom odnosi się do&nbsp;pełnej ścieżki, czyli całkowitej trasy, jaką ma&nbsp;pokonać komiwojażer.
+
+2. **Parametry algorytmu**: 
+Parametry są&nbsp;zdefiniowane w&nbsp;klasie `GeneticAlgorithmConfig`, co&nbsp;ułatwia ich modyfikację i&nbsp;zarządzanie ustawieniami algorytmu.
+
+   **Parametry**:
+
+   * `POPULATION_SIZE` - Liczba osobników w&nbsp;populacji; większa populacja sprzyja różnorodności rozwiązań, ale wydłuża czas obliczeń.
+
+   * `GENERATION_LIMIT` - Maksymalna liczba generacji, po&nbsp;której algorytm kończy działanie, co&nbsp;pozwala kontrolować czas obliczeń przy bardziej czasochłonnych zadaniach.
+
+   * `STEADY_FITNESS_GENERATION_LIMIT` - Liczba generacji, po&nbsp;której algorytm kończy działanie, jeśli wartości fitness pozostają bez poprawy. Umożliwia to&nbsp;wcześniejsze zakończenie poszukiwań, gdy algorytm nie znajduje lepszych rozwiązań.
+
+   * `MUTATION_PROBABILITY` - Prawdopodobieństwo mutacji dla każdego osobnika w&nbsp;populacji, co&nbsp;zwiększa różnorodność i&nbsp;zapobiega stagnacji w&nbsp;poszukiwaniu rozwiązań.
+
+   * `PMX_CROSSOVER_PROBABILITY` - Prawdopodobieństwo użycia operatora krzyżowania PMX (*Partially Matched Crossover*) podczas tworzenia nowego pokolenia. Operator krzyżowania umożliwia wymianę genotypów między osobnikami, co&nbsp;jest kluczowe dla uzyskania lepszych rozwiązań.
+
+3. **Operatorzy genetyczni**:
+   * **Mutacja**: Operator `SwapMutator`, który losowo zamienia kolejność miast w&nbsp;ścieżce.
+   * **Krzyżowanie**: Operator `PartiallyMatchedCrossover` (PMX), który pozwala na&nbsp;wymianę fragmentów genotypów między osobnikami.
+
+4. **Funkcja oceny fitness**: 
+Funkcja ta&nbsp;służy do&nbsp;oceny uzyskanych rozwiązań na&nbsp;podstawie długości trasy. Oblicza całkowitą odległość, sumując odległości między kolejnymi miastami oraz uwzględniając powrót do&nbsp;miasta początkowego. Dzięki temu możliwe jest porównanie efektywności różnych tras i&nbsp;wybranie najlepszej.
+
+5. **Wizualizacja**:
+Do&nbsp;wizualizacji przebiegu ewolucji zastosowano bibliotekę `JFreeChart` [[6]](#bibliografia), która umożliwia dynamiczne monitorowanie postępów algorytmu w&nbsp;czasie rzeczywistym. Wykresy ukazują zmiany wartości fitness najlepszych rozwiązań w&nbsp;kolejnych generacjach, a&nbsp;także wartości najgorsze oraz średnie dla całej generacji, co&nbsp;ułatwia ocenę efektywności algorytmu.
+
+6. **Wykonanie algorytmu**: 
+Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązanie w&nbsp;każdej generacji i&nbsp;aktualizuje wykres w&nbsp;interfejsie graficznym. Po&nbsp;zakończeniu ewolucji algorytm zapisuje wykres do&nbsp;pliku oraz wyświetla najlepsze znalezione rozwiązanie.
 
 ## 4. Wyniki eksperymentów
 
@@ -104,7 +193,18 @@ Obsługuje paralelizację, co&nbsp;zwiększa wydajność.
 
 2. **J. H. Holland, Adaptation in Natural and Artificial Systems: An&nbsp;Introductory Analysis with Applications to&nbsp;Biology, Control, and Artificial Intelligence**, MIT Press, 1992. 
 
-3. **D. E. Goldberg, Genetic Algorithms in&nbsp;Search, Optimization, and&nbsp;Machine Learning**, Addison-Wesley, 1989. 
+3. **D. E. Goldberg, Genetic Algorithms in&nbsp;Search, Optimization, and&nbsp;Machine Learning**, Addison-Wesley, 1989.
+
+4. **Jenetics: Biblioteka algorytmu genetycznego w Java**. Dostępne online: <https://jenetics.io>.
+
+5. **DEAP: Distributed Evolutionary Algorithms in Python**. Dostępne online: <https://deap.readthedocs.io/en/master>.
+
+6. **JFreeChart: Biblioteka do tworzenia wykresów w Java**. Dostępne online: <http://www.jfree.org/jfreechart>.
+
+7. **OpenStreetMap Nominatim, Dokumentacja API**. Dostępne online: <https://nominatim.org/release-docs/develop/api/Search>.
+
+8. **OSRM Project, Dokumentacja API Open Source Routing Machine**. Dostępne online: <http://project-osrm.org/docs/v5.23.0/api>.
+
 
 ## Załączniki
 
