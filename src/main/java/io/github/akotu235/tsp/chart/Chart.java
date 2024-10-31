@@ -6,6 +6,8 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -39,9 +41,25 @@ public class Chart extends JFrame {
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
-                true,
+                false,
                 false
         );
+
+        XYPlot plot = (XYPlot) chart.getPlot();
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
+        renderer.setSeriesStroke(1, new BasicStroke(2.0f));
+        renderer.setSeriesStroke(2, new BasicStroke(2.0f));
+        renderer.setSeriesShapesVisible(0, false);
+        renderer.setSeriesShapesVisible(1, false);
+        renderer.setSeriesShapesVisible(2, false);
+        plot.setRenderer(renderer);
+
+        LegendTitle legend = chart.getLegend();
+        legend.setItemFont(new Font("Arial", Font.PLAIN, 16));
+
+        plot.getDomainAxis().setLabelFont(new Font("Arial", Font.PLAIN, 18));
+        plot.getRangeAxis().setLabelFont(new Font("Arial", Font.PLAIN, 18));
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(800, 600));
@@ -68,7 +86,7 @@ public class Chart extends JFrame {
     public void saveToFile() {
         try {
             File file = new File("wykres.png");
-            ChartUtilities.saveChartAsPNG(file, chart, 800, 600);
+            ChartUtilities.saveChartAsPNG(file, chart, 1200, 600);
         } catch (IOException e) {
             System.err.println("Błąd podczas zapisywania wykresu: " + e.getMessage());
         }
