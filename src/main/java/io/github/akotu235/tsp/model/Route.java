@@ -10,6 +10,6 @@ public record Route(List<Node> nodes, double totalCost, String costUnit) {
                 .map(Node::getName)
                 .collect(Collectors.joining(" -> "));
 
-        return String.format("Best result: %.0f %s\nRoute: %s\n", totalCost, costUnit, nodeNames);
+        return String.format("Total cost: %.0f %s\nRoute: %s\n", totalCost, costUnit, nodeNames);
     }
 }
