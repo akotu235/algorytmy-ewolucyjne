@@ -1,5 +1,6 @@
 package io.github.akotu235.tsp.chart;
 
+import io.github.akotu235.tsp.optimization.RouteOptimizer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
@@ -13,6 +14,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,10 +24,13 @@ public class Chart extends JFrame {
     private final XYSeries avgSeries;
     private final XYSeries worstSeries;
     private final JFreeChart chart;
+    private final RouteOptimizer routeOptimizer;
     private double minY = Double.MAX_VALUE;
     private double maxY = Double.MIN_VALUE;
 
-    public Chart() {
+    public Chart(RouteOptimizer routeOptimizer) {
+        setTitle("Chart");
+        this.routeOptimizer = routeOptimizer;
         bestSeries = new XYSeries("Najlepszy Wynik");
         avgSeries = new XYSeries("Średni Wynik");
         worstSeries = new XYSeries("Najgorszy Wynik");
@@ -64,6 +70,20 @@ public class Chart extends JFrame {
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(800, 600));
         setContentPane(chartPanel);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                onClose();
+            }
+        });
+
+        setSize(800, 600);
+        setVisible(true);
+    }
+
+    private void onClose() {
+        routeOptimizer.interrupt();
     }
 
     public void updateChart(long generation, double bestFitness, double averageFitness, double worstFitness) {

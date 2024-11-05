@@ -2,6 +2,7 @@ package io.github.akotu235.tsp.optimization;
 
 import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
+import io.github.akotu235.tsp.gui.ResultFrame;
 import io.github.akotu235.tsp.model.CostMatrix;
 import io.github.akotu235.tsp.model.DataModel;
 import io.github.akotu235.tsp.model.Node;
@@ -14,65 +15,57 @@ import io.jenetics.engine.Limits;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.function.Function;
 
 
-public class RouteOptimizer {
+public class RouteOptimizer extends Thread {
     private final DataModel dataModel;
+    private final GeneticAlgorithmConfig config;
     private final Chart chart;
 
     public RouteOptimizer(DataModel dataModel) {
         this.dataModel = dataModel;
-        this.chart = new Chart();
-        this.chart.setSize(800, 600);
-        this.chart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.chart.setVisible(true);
+        this.config = new GeneticAlgorithmConfig();
+        this.chart = new Chart(this);
     }
 
-    public void findBestRoute() {
-        new Thread(() -> {
-            // Definicja fabryki chromosomów (ścieżek)
-            Genotype<EnumGene<Integer>> genotypeFactory = Genotype.of(PermutationChromosome.ofInteger(dataModel.getNodeCount()));
+    @Override
+    public void run() {
+        // Definicja fabryki chromosomów (ścieżek)
+        Genotype<EnumGene<Integer>> genotypeFactory = Genotype.of(PermutationChromosome.ofInteger(dataModel.getNodeCount()));
 
-            // Funkcja oceny fitness (minimalizacja długości trasy)
-            Function<Genotype<EnumGene<Integer>>, Double> fitnessFunction = genotype -> calculateRouteLength(genotype, dataModel.getCostMatrix());
+        // Funkcja oceny fitness (minimalizacja długości trasy)
+        Function<Genotype<EnumGene<Integer>>, Double> fitnessFunction = genotype -> calculateRouteLength(genotype, dataModel.getCostMatrix());
 
-            // Konfiguracja i uruchomienie silnika genetycznego
-            Engine<EnumGene<Integer>, Double> engine = Engine.builder(fitnessFunction, genotypeFactory)
-                    .populationSize(GeneticAlgorithmConfig.POPULATION_SIZE)
-                    .optimize(Optimize.MINIMUM)
-                    .alterers(
-                            new SwapMutator<>(GeneticAlgorithmConfig.MUTATION_PROBABILITY),
-                            new PartiallyMatchedCrossover<>(GeneticAlgorithmConfig.PMX_CROSSOVER_PROBABILITY)
-                    )
-                    .build();
+        // Konfiguracja silnika genetycznego
+        Engine<EnumGene<Integer>, Double> engine = Engine.builder(fitnessFunction, genotypeFactory)
+                .populationSize(config.getPopulationSize())
+                .optimize(Optimize.MINIMUM)
+                .alterers(
+                        new SwapMutator<>(config.getMutationProbability()),
+                        new PartiallyMatchedCrossover<>(config.getCrossoverProbability())
+                )
+                .build();
 
+        try {
             // Uruchomienie ewolucji
             Phenotype<EnumGene<Integer>, Double> result = engine.stream()
-                    .limit(Limits.bySteadyFitness(GeneticAlgorithmConfig.STEADY_FITNESS_GENERATION_LIMIT))
-                    .limit(GeneticAlgorithmConfig.GENERATION_LIMIT)
+                    .limit(Limits.bySteadyFitness(config.getSteadyFitnessGenerationLimit()))
+                    .limit(config.getGenerationLimit())
                     .peek(this::printBestOfGeneration)
                     .peek(this::updateChart)
                     .collect(EvolutionResult.toBestPhenotype());
 
-            //Zapis wykresu do pliku
-            chart.saveToFile();
-
             // Wyświetlenie najlepszego rozwiązania
             System.out.println(convertPhenotypeToRoute(result));
-        }).start();
-    }
+            ResultFrame.showResult(convertPhenotypeToRoute(result).toString());
 
-    private void updateChart(EvolutionResult<EnumGene<Integer>, Double> result) {
-        double bestFitness = result.bestFitness();
-        double worstFitness = result.worstFitness();
-        double averageFitness = result.population().stream()
-                .mapToDouble(Phenotype::fitness)
-                .average()
-                .orElse(0.0);
-        SwingUtilities.invokeLater(() -> {
-            chart.updateChart(result.generation(), bestFitness, averageFitness, worstFitness);
-        });
+            //Zapis wykresu do pliku
+            chart.saveToFile();
+        } catch (CancellationException e) {
+            System.out.println("Evolution was cancelled.");
+        }
     }
 
     //Funkcja fitness
@@ -90,6 +83,16 @@ public class RouteOptimizer {
         return distance;
     }
 
+    private void updateChart(EvolutionResult<EnumGene<Integer>, Double> result) {
+        double averageFitness = result.population().stream()
+                .mapToDouble(Phenotype::fitness)
+                .average().
+                orElseThrow();
+        SwingUtilities.invokeLater(() -> {
+            chart.updateChart(result.generation(), result.bestFitness(), averageFitness, result.worstFitness());
+        });
+    }
+
     private Route convertPhenotypeToRoute(Phenotype<EnumGene<Integer>, Double> phenotype) {
         List<Node> nodes = new ArrayList<>();
 
@@ -104,5 +107,9 @@ public class RouteOptimizer {
     private void printBestOfGeneration(EvolutionResult<EnumGene<Integer>, Double> result) {
         Route route = convertPhenotypeToRoute(result.bestPhenotype());
         System.out.printf("Generation: %d\n%s\n", result.generation(), route);
+    }
+
+    public GeneticAlgorithmConfig getConfig() {
+        return config;
     }
 }
