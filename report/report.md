@@ -29,7 +29,7 @@ Zastosowanie algorytmów ewolucyjnych w&nbsp;logistyce obejmuje m.in.&nbsp;probl
 
 ## 2. Biblioteki programistyczne
 
-### 2.1. DEAP (Distributed Evolutionary Algorithms in Python)
+### 2.1. DEAP (Distributed Evolutionary Algorithms in Python) [[4]](#bibliografia)
 
 **Instalacja**:
 
@@ -57,7 +57,7 @@ Obsługuje niestandardowe genotypy, funkcje fitness oraz operatory, a&nbsp;takż
 * Krzywa uczenia się dla początkujących.
 * Potencjalnie wolniejsza wydajność przy dużych populacjach.
 
-### 2.2. Jenetics (Java)
+### 2.2. Jenetics (Java) [[5]](#bibliografia)
 
 **Instalacja**:
 
@@ -102,10 +102,10 @@ Aby dostarczyć algorytmowi genetycznemu odpowiednie dane wejściowe, generowany
 Program przyjmuje listę nazw miast, która będzie służyła jako punkty docelowe w&nbsp;problemie komiwojażera.
 
 2. **Pobieranie współrzędnych geograficznych**:
-Dla każdego miasta program pobiera współrzędne geograficzne (szerokość i&nbsp;długość geograficzną) za&nbsp;pomocą `API Nominatim` [[7]](#bibliografia). Współrzędne te&nbsp;pozwalają na&nbsp;dokładne określenie położenia miast, co&nbsp;jest kluczowe dla wyznaczania odległości między nimi.
+Dla każdego miasta program pobiera współrzędne geograficzne (szerokość i&nbsp;długość geograficzną) za&nbsp;pomocą `API Nominatim` [[7]](#bibliografia). Współrzędne te&nbsp;pozwalają na&nbsp;dokładne określenie położenia miast, co&nbsp;jest wymagane do wyznaczania odległości między nimi.
 
 3. **Obliczanie kosztów tras między miastami**:
-Na podstawie pobranych współrzędnych każdej pary miast wyznaczany jest koszt trasy (długość drogi samochodowej) z&nbsp;wykorzystaniem `API OSRM` [[8]](#bibliografia). Koszty te&nbsp;są&nbsp;następnie zapisywane w&nbsp;postaci macierzy kosztów (`costMatrix`), gdzie każda komórka określa koszt przejścia między dwiema lokacjami. Macierz ta&nbsp;jest symetryczna, ponieważ trasa między dwoma miastami ma&nbsp;ten sam koszt w&nbsp;obu kierunkach.
+Na podstawie pobranych współrzędnych każdej pary miast wyznaczany jest koszt trasy (długość drogi samochodowej) z&nbsp;wykorzystaniem `API OSRM` [[8]](#bibliografia). Koszty te&nbsp;są&nbsp;następnie zapisywane w&nbsp;postaci macierzy kosztów (`costMatrix`), gdzie każda komórka określa koszt przejścia między dwoma węzłami (miastami). Macierz jest symetryczna, ponieważ przyjmuje się, że&nbsp;koszt trasy między dwoma miastami jest identyczny w&nbsp;obu kierunkach.
 
 4. **Budowanie modelu danych**:
 Powstały obiekt `DataModel` zawiera trzy kluczowe elementy:
@@ -155,15 +155,15 @@ Parametry są&nbsp;zdefiniowane w&nbsp;klasie `GeneticAlgorithmConfig`, co&nbsp;
 
    **Parametry**:
 
-   * `POPULATION_SIZE` - Liczba osobników w&nbsp;populacji; większa populacja sprzyja różnorodności rozwiązań, ale wydłuża czas obliczeń.
+   * **Wielkość populacji** (`POPULATION_SIZE`) - Liczba osobników w&nbsp;populacji; większa populacja sprzyja różnorodności rozwiązań, ale wydłuża czas obliczeń.
 
-   * `GENERATION_LIMIT` - Maksymalna liczba generacji, po&nbsp;której algorytm kończy działanie, co&nbsp;pozwala kontrolować czas obliczeń przy bardziej czasochłonnych zadaniach.
+   * **Limit pokoleń** (`GENERATION_LIMIT`) - Maksymalna liczba generacji, po&nbsp;której algorytm kończy działanie, co&nbsp;pozwala kontrolować czas obliczeń przy bardziej czasochłonnych zadaniach.
 
-   * `STEADY_FITNESS_GENERATION_LIMIT` - Liczba generacji, po&nbsp;której algorytm kończy działanie, jeśli wartości fitness pozostają bez poprawy. Umożliwia to&nbsp;wcześniejsze zakończenie poszukiwań, gdy algorytm nie znajduje lepszych rozwiązań.
+   * **Próg stagnacji** (`STEADY_FITNESS_GENERATION_LIMIT`) - Liczba generacji, po&nbsp;której algorytm kończy działanie, jeśli wartości fitness pozostają bez poprawy. Umożliwia to&nbsp;wcześniejsze zakończenie poszukiwań, gdy algorytm nie znajduje lepszych rozwiązań.
 
-   * `MUTATION_PROBABILITY` - Prawdopodobieństwo mutacji dla każdego osobnika w&nbsp;populacji, co&nbsp;zwiększa różnorodność i&nbsp;zapobiega stagnacji w&nbsp;poszukiwaniu rozwiązań.
+   * **Prawdopodobieństwo mutacji** (`MUTATION_PROBABILITY`) - Prawdopodobieństwo mutacji dla każdego osobnika w&nbsp;populacji, co&nbsp;zwiększa różnorodność i&nbsp;zapobiega stagnacji w&nbsp;poszukiwaniu rozwiązań.
 
-   * `PMX_CROSSOVER_PROBABILITY` - Prawdopodobieństwo użycia operatora krzyżowania PMX (*Partially Matched Crossover*) podczas tworzenia nowego pokolenia. Operator krzyżowania umożliwia wymianę genotypów między osobnikami, co&nbsp;jest kluczowe dla uzyskania lepszych rozwiązań.
+   * **Prawdopodobieństwo krzyżowania** (`PMX_CROSSOVER_PROBABILITY`) - Prawdopodobieństwo użycia operatora krzyżowania PMX (*Partially Matched Crossover*) podczas tworzenia nowego pokolenia. Operator krzyżowania umożliwia wymianę genotypów między osobnikami, co&nbsp;jest kluczowe dla uzyskania lepszych rozwiązań.
 
 3. **Operatorzy genetyczni**:
    * **Mutacja**: Operator `SwapMutator`, który losowo zamienia kolejność miast w&nbsp;ścieżce.
@@ -177,6 +177,25 @@ Do&nbsp;wizualizacji przebiegu ewolucji zastosowano bibliotekę `JFreeChart` [[6
 
 6. **Wykonanie algorytmu**: 
 Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązanie w&nbsp;każdej generacji i&nbsp;aktualizuje wykres w&nbsp;interfejsie graficznym. Po&nbsp;zakończeniu ewolucji algorytm zapisuje wykres do&nbsp;pliku oraz wyświetla najlepsze znalezione rozwiązanie.
+
+7. **Interfejs użytkownika**:  
+Prosty i&nbsp;funkcjonalny interfejs, stworzony przy użyciu biblioteki `Swing` [[9]](#bibliografia), pozwalający na&nbsp;konfigurację parametrów i&nbsp;uruchamianie algorytmu ewolucyjnego oraz na&nbsp;generowanie i&nbsp;ładowanie modelu danych.
+
+   * **Panel główny** — zawiera sekcje:
+      * **Model danych** — z&nbsp;dwoma przyciskami:
+         * **Utwórz model danych** — otwiera panel, który umożliwia tworzenie modelu danych.
+         * **Wczytaj dane** — pozwala wybrać plik z&nbsp;zapisanym modelem danych.
+      * **Parametry algorytmu** — sekcja umożliwiająca ustawienie wartości parametrów algorytmu.
+      * **Przycisk uruchamiania algorytmu** — aktywny po&nbsp;załadowaniu pliku z&nbsp;modelem danych, pozwala uruchomić algorytm.
+
+     ![Panel główny](img/img1.jpg)
+
+   * **Panel tworzenia modelu danych** — zaprojektowany do&nbsp;generowania nowego modelu danych, podzielony na&nbsp;następujące sekcje:
+      * **Plik** — umożliwia wybór lokalizacji oraz nadanie nazwy pliku, w&nbsp;którym zapisany zostanie model.
+      * **Miasta** — zawiera pole tekstowe do&nbsp;wprowadzania listy miast, które można oddzielać za&nbsp;pomocą *przecinków* lub *znaków nowej linii*.
+
+     ![Panel tworzenia modelu danych](img/img2.jpg)
+
 
 ## 4. Wyniki eksperymentów
 
@@ -195,9 +214,9 @@ Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązani
 
 3. **D. E. Goldberg, Genetic Algorithms in&nbsp;Search, Optimization, and&nbsp;Machine Learning**, Addison-Wesley, 1989.
 
-4. **Jenetics: Biblioteka algorytmu genetycznego w Java**. Dostępne online: <https://jenetics.io>.
+4. **DEAP: Distributed Evolutionary Algorithms in Python**. Dostępne online: <https://deap.readthedocs.io/en/master>.
 
-5. **DEAP: Distributed Evolutionary Algorithms in Python**. Dostępne online: <https://deap.readthedocs.io/en/master>.
+5. **Jenetics: Biblioteka algorytmu genetycznego w Java**. Dostępne online: <https://jenetics.io>.
 
 6. **JFreeChart: Biblioteka do tworzenia wykresów w Java**. Dostępne online: <http://www.jfree.org/jfreechart>.
 
@@ -205,9 +224,11 @@ Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązani
 
 8. **OSRM Project, Dokumentacja API Open Source Routing Machine**. Dostępne online: <http://project-osrm.org/docs/v5.23.0/api>.
 
+9. **Oracle, Java Swing Tutorial**. Dostępne online: <https://docs.oracle.com/javase/tutorial/uiswing>.
+
 
 ## Załączniki
 
-1. **Repozytorium kodu źródłowego** – Pełny kod projektu. Dostępne online: <https://github.com/akotu235/algorytmy-ewolucyjne>
+1. **Repozytorium kodu źródłowego** – Pełny kod projektu. Dostępne online: <https://github.com/akotu235/algorytmy-ewolucyjne>.
 
-2. **Wersja online sprawozdania** – Bieżąca wersja dokumentu. Dostępne online: <https://github.com/akotu235/algorytmy-ewolucyjne/blob/master/report.md>
+2. **Wersja online sprawozdania** – Bieżąca wersja dokumentu. Dostępne online: <https://github.com/akotu235/algorytmy-ewolucyjne/blob/master/report.md>.

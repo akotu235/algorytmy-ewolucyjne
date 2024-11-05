@@ -11,7 +11,7 @@ if (-Not (Test-Path $reportFile))
 }
 
 # Generowanie PDF z podanego pliku Markdown
-pandoc.exe $reportFile -o $outputFile --pdf-engine=xelatex -V geometry:a3paper -V geometry:margin=1in -V pagestyle=empty --highlight-style=tango
+pandoc.exe $reportFile -o $outputFile --pdf-engine=xelatex -V geometry:a3paper -V geometry:margin=1in -V lang=pl -V pagestyle=empty --highlight-style=tango
 
 # Otwieranie wygenerowanego pliku PDF
 Start-Process $outputFile
@@ -19,8 +19,8 @@ Start-Process $outputFile
 # SIG # Begin signature block
 # MIIIWAYJKoZIhvcNAQcCoIIISTCCCEUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUZ7p5Yqzd2idWIK5HSNBqkFiF
-# CyagggT6MIIE9jCCAt6gAwIBAgIQYYPyfUBBC6pE/rAfOslXOzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUCSsMIC2Wol5mReVKLE6FIl9x
+# qz+gggT6MIIE9jCCAt6gAwIBAgIQYYPyfUBBC6pE/rAfOslXOzANBgkqhkiG9w0B
 # AQsFADATMREwDwYDVQQDDAhha290dSBDQTAeFw0yMjA5MjAxOTQ4MDFaFw0zMjA5
 # MjAxOTU4MDFaMBMxETAPBgNVBAMMCGFrb3R1IENBMIICIjANBgkqhkiG9w0BAQEF
 # AAOCAg8AMIICCgKCAgEAvGcae/FCZugTbghxO7Qv9wQKvRvp9/WvJyJci/SIsPr1
@@ -50,16 +50,16 @@ Start-Process $outputFile
 # ETAPBgNVBAMMCGFrb3R1IENBAhBhg/J9QEELqkT+sB86yVc7MAkGBSsOAwIaBQCg
 # eDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEE
 # AYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJ
-# BDEWBBTSG/pKOlLO6wkcP+LiOaHk8M61ljANBgkqhkiG9w0BAQEFAASCAgCw/ytC
-# YRCbD5r4JY9BrQ8xmMdiMTbdY+qokWZhgajOinRNNfa004m1zqLZZ/7sqo2x/ZSi
-# HR0iLIa+vVQYK2bDfh4IBVVWX7TPn2i0hOIgl2mNlOuL2LFjtr4uG2VnlzDpcVyD
-# 8fwTbfRQFbnU2GuGG2uOvYbMHm6IJ9Ncsnw8pdgYFpqiGN9+goJ6lfQlhyDDM5k+
-# Hh4oPP9eAZc51z11KDeyHcspJ5FSatX64pv84VjVoS/HL2Po6zuoNYt95xmh9+cK
-# v3Giy7FrVxUsDPS4B9fyfZbA7SCcO04ihZmy8wVH5EnTFVxiLBHkargHdBtCw7qk
-# F2TM/ZPq3+cT/5IosE8EtYT1A0ql5FU/IcKDT0ltvGp9G09Pg5pbXYkVibxVktkR
-# YXYYHQIpPWXugVYTqN5M6BfWQx9exjAcLSj03YR1nDPm7WNMLUjG10z9CPhzyLgs
-# Z+dI5OlKcDXwivwLuHN+Fu8H+/wI6SUkYzhsv0XqYQemUtr5L8doOjcPRSZPEhdB
-# XozEHbyJbgzj02O3DtlgQ6CJuaVlTAwoUxLr6LcfsS4MNo+uCswgw2z4J6ZARH4r
-# bor0tCjp0D2aYQQLr30POVyJq5ReJnhDmAi4/vIJbftxM/vwaBz/I7G+Of7BLbTq
-# bLkDqZyBg1hihBR+mpVo3jliOcxbkeuvaIxYDA==
+# BDEWBBRLbv83VY2U17jXOCwJBl9Ca3bKkTANBgkqhkiG9w0BAQEFAASCAgCgQiVg
+# SSDjL7bITpTwH4bqjqLd/KMB7Hq3yULcEsaZ++7kQouRON9k5vQvNudIEtz690aR
+# eIczEZ9oDoEV7qvjHI9dk2Jl4rf8mHgawpr05lr85QLsiEO2slLEL+RUzl+wjQLr
+# Ory5QwRN4BMFloc5p+lMMffsTI/91UkVocQXMyjyfeNB9+QVMv5TocsGyQZFBreG
+# yckKz/MEwEWyoQyfmAcftqOPZDfs0imyYKXxCfkGrTEyeUhZO8jVhHeBC7cZi1Vc
+# 79BqVZfM84Y8J4pNs03bIRc1AaVY1BNQP5tbVzdtGtupVxmajARQZn8B1vkQWsjG
+# Qip2rvKo2ZmWL55WXvtcogIg9JmM54wiZus1Oliuu/AaQrgzrSyZ0MrWuDgo7kgd
+# 96jjC7G7bZuy9sKp9Ic7CX7hhm51OBwfAhlZnX0/Te1U8e30aXxxK/Tn+TwxwDgK
+# 3iFz1gkjLNdTwNDbJOCJY5P/H3R2ygwi9vuq/mWMFYJN3n89FKbioHWA1jQAV/Qi
+# zYMqW9vDOHobth7lt1t3074cISqi8LR6kgapM65zp00s2CFet+lTMSDBpw7nbbv8
+# /0z57/g2OqsOlW05WS/W/JlocYZMZ7t15Gttt18Y5BFhwzrlfFLDRDwLX0AJbRn1
+# 729EP177t42BxwdYXpiMU6XTKbYC8FQbODyfGA==
 # SIG # End signature block
