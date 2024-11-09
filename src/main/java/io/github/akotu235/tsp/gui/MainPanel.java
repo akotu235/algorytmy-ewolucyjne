@@ -2,6 +2,7 @@ package io.github.akotu235.tsp.gui;
 
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
 import io.github.akotu235.tsp.model.DataModel;
+import io.github.akotu235.tsp.model.Results;
 import io.github.akotu235.tsp.optimization.RouteOptimizer;
 import io.github.akotu235.tsp.utils.DeserializeDataModel;
 
@@ -9,9 +10,12 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainPanel extends JPanel {
 
+    private final JTextField executionCountField;
     private final JTextField populationSizeField;
     private final JTextField generationLimitField;
     private final JTextField steadyFitnessLimitField;
@@ -19,10 +23,12 @@ public class MainPanel extends JPanel {
     private final JTextField crossoverProbabilityField;
     private final JLabel fileLabel;
     private File dataModelFile;
+    private Results results;
 
     public MainPanel() {
         setLayout(new BorderLayout());
 
+        executionCountField = new JTextField("10");
         populationSizeField = new JTextField("100000");
         generationLimitField = new JTextField("1000");
         steadyFitnessLimitField = new JTextField("50");
@@ -57,6 +63,9 @@ public class MainPanel extends JPanel {
         JPanel paramPanel = new JPanel();
         paramPanel.setLayout(new BoxLayout(paramPanel, BoxLayout.Y_AXIS));
         paramPanel.setBorder(BorderFactory.createTitledBorder("Parametry Algorytmu"));
+        paramPanel.setPreferredSize(new Dimension(600, 250));
+        paramPanel.add(new JLabel("Ilość uruchomień:"));
+        paramPanel.add(executionCountField);
         paramPanel.add(new JLabel("Wielkość populacji:"));
         paramPanel.add(populationSizeField);
         paramPanel.add(new JLabel("Limit pokoleń:"));
@@ -89,16 +98,23 @@ public class MainPanel extends JPanel {
         }
 
         DataModel dataModel = DeserializeDataModel.loadDataModelFromFile(dataModelFile.getAbsolutePath());
-        RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel);
 
-        GeneticAlgorithmConfig config = routeOptimizer.getConfig();
-        config.setPopulationSize(Integer.parseInt(populationSizeField.getText()));
-        config.setGenerationLimit(Integer.parseInt(generationLimitField.getText()));
-        config.setSteadyFitnessGenerationLimit(Integer.parseInt(steadyFitnessLimitField.getText()));
-        config.setMutationProbability(Double.parseDouble(mutationProbabilityField.getText()));
-        config.setCrossoverProbability(Double.parseDouble(crossoverProbabilityField.getText()));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        int executionCount = Integer.parseInt(executionCountField.getText());
 
-        routeOptimizer.start();
+        for (int i = 0; i < executionCount; i++) {
+            RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, results);
+
+            GeneticAlgorithmConfig config = routeOptimizer.getConfig();
+            config.setPopulationSize(Integer.parseInt(populationSizeField.getText()));
+            config.setGenerationLimit(Integer.parseInt(generationLimitField.getText()));
+            config.setSteadyFitnessGenerationLimit(Integer.parseInt(steadyFitnessLimitField.getText()));
+            config.setMutationProbability(Double.parseDouble(mutationProbabilityField.getText()));
+            config.setCrossoverProbability(Double.parseDouble(crossoverProbabilityField.getText()));
+
+            executor.submit(routeOptimizer);
+        }
+        executor.shutdown();
     }
 
     private void chooseFile() {
@@ -111,6 +127,7 @@ public class MainPanel extends JPanel {
         if (result == JFileChooser.APPROVE_OPTION) {
             dataModelFile = fileChooser.getSelectedFile();
             fileLabel.setText("Wybrano plik: " + dataModelFile.getName());
+            results = new Results(dataModelFile.getName());
         }
     }
 }

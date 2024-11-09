@@ -2,11 +2,7 @@ package io.github.akotu235.tsp.optimization;
 
 import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
-import io.github.akotu235.tsp.gui.ResultFrame;
-import io.github.akotu235.tsp.model.CostMatrix;
-import io.github.akotu235.tsp.model.DataModel;
-import io.github.akotu235.tsp.model.Node;
-import io.github.akotu235.tsp.model.Route;
+import io.github.akotu235.tsp.model.*;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
@@ -23,9 +19,11 @@ public class RouteOptimizer extends Thread {
     private final DataModel dataModel;
     private final GeneticAlgorithmConfig config;
     private final Chart chart;
+    private final Results results;
 
-    public RouteOptimizer(DataModel dataModel) {
+    public RouteOptimizer(DataModel dataModel, Results results) {
         this.dataModel = dataModel;
+        this.results = results;
         this.config = new GeneticAlgorithmConfig();
         this.chart = new Chart(this);
     }
@@ -48,18 +46,20 @@ public class RouteOptimizer extends Thread {
                 )
                 .build();
 
+        //Włączenie wykresu
+        chart.setVisible(true);
+
         try {
             // Uruchomienie ewolucji
             Phenotype<EnumGene<Integer>, Double> result = engine.stream()
                     .limit(Limits.bySteadyFitness(config.getSteadyFitnessGenerationLimit()))
                     .limit(config.getGenerationLimit())
-                    .peek(this::printBestOfGeneration)
+                    //.peek(this::printBestOfGeneration)
                     .peek(this::updateChart)
                     .collect(EvolutionResult.toBestPhenotype());
 
-            // Wyświetlenie najlepszego rozwiązania
-            System.out.println(convertPhenotypeToRoute(result));
-            ResultFrame.showResult(convertPhenotypeToRoute(result).toString());
+            //Dodanie rezultatu
+            results.add(convertPhenotypeToRoute(result));
 
             //Zapis wykresu do pliku
             chart.saveToFile();
@@ -88,9 +88,7 @@ public class RouteOptimizer extends Thread {
                 .mapToDouble(Phenotype::fitness)
                 .average().
                 orElseThrow();
-        SwingUtilities.invokeLater(() -> {
-            chart.updateChart(result.generation(), result.bestFitness(), averageFitness, result.worstFitness());
-        });
+        SwingUtilities.invokeLater(() -> chart.updateChart(result.generation(), result.bestFitness(), averageFitness, result.worstFitness()));
     }
 
     private Route convertPhenotypeToRoute(Phenotype<EnumGene<Integer>, Double> phenotype) {

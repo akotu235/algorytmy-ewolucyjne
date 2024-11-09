@@ -79,7 +79,7 @@ public class Chart extends JFrame {
         });
 
         setSize(800, 600);
-        setVisible(true);
+        setVisible(false);
     }
 
     private void onClose() {
