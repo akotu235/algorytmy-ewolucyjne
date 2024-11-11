@@ -1,5 +1,6 @@
 package io.github.akotu235.tsp.gui;
 
+import io.github.akotu235.tsp.chart.ChartManager;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
 import io.github.akotu235.tsp.model.DataModel;
 import io.github.akotu235.tsp.model.Results;
@@ -12,24 +13,30 @@ import java.awt.*;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MainPanel extends JPanel {
 
     private final JTextField executionCountField;
+    private final JTextField threadPoolSizeField;
     private final JTextField populationSizeField;
     private final JTextField generationLimitField;
     private final JTextField steadyFitnessLimitField;
     private final JTextField mutationProbabilityField;
     private final JTextField crossoverProbabilityField;
     private final JLabel fileLabel;
+    private final ChartManager charts;
     private File dataModelFile;
     private Results results;
+    private ExecutorService executor;
 
     public MainPanel() {
+        this.charts = new ChartManager();
         setLayout(new BorderLayout());
 
         executionCountField = new JTextField("10");
-        populationSizeField = new JTextField("100000");
+        threadPoolSizeField = new JTextField("3");
+        populationSizeField = new JTextField("50000");
         generationLimitField = new JTextField("1000");
         steadyFitnessLimitField = new JTextField("50");
         mutationProbabilityField = new JTextField("0.3");
@@ -63,9 +70,11 @@ public class MainPanel extends JPanel {
         JPanel paramPanel = new JPanel();
         paramPanel.setLayout(new BoxLayout(paramPanel, BoxLayout.Y_AXIS));
         paramPanel.setBorder(BorderFactory.createTitledBorder("Parametry Algorytmu"));
-        paramPanel.setPreferredSize(new Dimension(600, 250));
+        paramPanel.setPreferredSize(new Dimension(600, 300));
         paramPanel.add(new JLabel("Ilość uruchomień:"));
         paramPanel.add(executionCountField);
+        paramPanel.add(new JLabel("Ilość wątków:"));
+        paramPanel.add(threadPoolSizeField);
         paramPanel.add(new JLabel("Wielkość populacji:"));
         paramPanel.add(populationSizeField);
         paramPanel.add(new JLabel("Limit pokoleń:"));
@@ -98,23 +107,34 @@ public class MainPanel extends JPanel {
         }
 
         DataModel dataModel = DeserializeDataModel.loadDataModelFromFile(dataModelFile.getAbsolutePath());
+        GeneticAlgorithmConfig config = getConfig();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        int executionCount = Integer.parseInt(executionCountField.getText());
+        terminateExecutor();
+        this.executor = Executors.newFixedThreadPool(config.threadPoolSize());
 
-        for (int i = 0; i < executionCount; i++) {
-            RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, results);
+        FrameAutoArranger autoArrangeFrames = new FrameAutoArranger(Math.min(config.threadPoolSize(), config.executionCount()));
 
-            GeneticAlgorithmConfig config = routeOptimizer.getConfig();
-            config.setPopulationSize(Integer.parseInt(populationSizeField.getText()));
-            config.setGenerationLimit(Integer.parseInt(generationLimitField.getText()));
-            config.setSteadyFitnessGenerationLimit(Integer.parseInt(steadyFitnessLimitField.getText()));
-            config.setMutationProbability(Double.parseDouble(mutationProbabilityField.getText()));
-            config.setCrossoverProbability(Double.parseDouble(crossoverProbabilityField.getText()));
+        charts.closeAll();
 
-            executor.submit(routeOptimizer);
+        for (int i = 0; i < config.executionCount(); i++) {
+            RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, config, results, autoArrangeFrames);
+            Future<?> routeOptimizerHandle = executor.submit(routeOptimizer);
+            routeOptimizer.setRouteOptimizerHandle(routeOptimizerHandle);
+            charts.add(routeOptimizer.getChart());
         }
         executor.shutdown();
+    }
+
+    private GeneticAlgorithmConfig getConfig() {
+        int executionCount = Integer.parseInt(executionCountField.getText());
+        int threadPoolSize = Integer.parseInt(threadPoolSizeField.getText());
+        int populationSize = Integer.parseInt(populationSizeField.getText());
+        int generationLimit = Integer.parseInt(generationLimitField.getText());
+        int steadyFitnessLimit = Integer.parseInt(steadyFitnessLimitField.getText());
+        double mutationProbability = Double.parseDouble(mutationProbabilityField.getText());
+        double crossoverProbability = Double.parseDouble(crossoverProbabilityField.getText());
+
+        return new GeneticAlgorithmConfig(executionCount, threadPoolSize, populationSize, generationLimit, steadyFitnessLimit, mutationProbability, crossoverProbability);
     }
 
     private void chooseFile() {
@@ -128,6 +148,15 @@ public class MainPanel extends JPanel {
             dataModelFile = fileChooser.getSelectedFile();
             fileLabel.setText("Wybrano plik: " + dataModelFile.getName());
             results = new Results(dataModelFile.getName());
+        }
+
+        charts.closeAll();
+        terminateExecutor();
+    }
+
+    private void terminateExecutor() {
+        if (executor != null) {
+            executor.shutdownNow();
         }
     }
 }

@@ -1,14 +1,13 @@
 package io.github.akotu235.tsp.chart;
 
+import io.github.akotu235.tsp.gui.FrameAutoArranger;
 import io.github.akotu235.tsp.optimization.RouteOptimizer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -16,8 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 
 public class Chart extends JFrame {
     private final XYSeries bestSeries;
@@ -28,7 +25,7 @@ public class Chart extends JFrame {
     private double minY = Double.MAX_VALUE;
     private double maxY = Double.MIN_VALUE;
 
-    public Chart(RouteOptimizer routeOptimizer) {
+    public Chart(RouteOptimizer routeOptimizer, FrameAutoArranger frameAutoArranger) {
         setTitle("Chart");
         this.routeOptimizer = routeOptimizer;
         bestSeries = new XYSeries("Najlepszy Wynik");
@@ -61,14 +58,7 @@ public class Chart extends JFrame {
         renderer.setSeriesShapesVisible(2, false);
         plot.setRenderer(renderer);
 
-        LegendTitle legend = chart.getLegend();
-        legend.setItemFont(new Font("Arial", Font.PLAIN, 16));
-
-        plot.getDomainAxis().setLabelFont(new Font("Arial", Font.PLAIN, 18));
-        plot.getRangeAxis().setLabelFont(new Font("Arial", Font.PLAIN, 18));
-
         ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(800, 600));
         setContentPane(chartPanel);
 
         addWindowListener(new WindowAdapter() {
@@ -78,12 +68,8 @@ public class Chart extends JFrame {
             }
         });
 
-        setSize(800, 600);
+        frameAutoArranger.setChartFrameLocation(this);
         setVisible(false);
-    }
-
-    private void onClose() {
-        routeOptimizer.interrupt();
     }
 
     public void updateChart(long generation, double bestFitness, double averageFitness, double worstFitness) {
@@ -103,12 +89,12 @@ public class Chart extends JFrame {
         chart.fireChartChanged();
     }
 
-    public void saveToFile() {
-        try {
-            File file = new File("wykres.png");
-            ChartUtilities.saveChartAsPNG(file, chart, 1200, 600);
-        } catch (IOException e) {
-            System.err.println("Błąd podczas zapisywania wykresu: " + e.getMessage());
-        }
+    public void close() {
+        onClose();
+        SwingUtilities.invokeLater(this::dispose);
+    }
+
+    private void onClose() {
+        routeOptimizer.interrupt();
     }
 }

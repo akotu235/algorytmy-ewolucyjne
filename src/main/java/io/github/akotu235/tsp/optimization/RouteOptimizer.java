@@ -2,6 +2,7 @@ package io.github.akotu235.tsp.optimization;
 
 import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
+import io.github.akotu235.tsp.gui.FrameAutoArranger;
 import io.github.akotu235.tsp.model.*;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 
 
@@ -20,12 +22,13 @@ public class RouteOptimizer extends Thread {
     private final GeneticAlgorithmConfig config;
     private final Chart chart;
     private final Results results;
+    private Future<?> routeOptimizerHandle;
 
-    public RouteOptimizer(DataModel dataModel, Results results) {
+    public RouteOptimizer(DataModel dataModel, GeneticAlgorithmConfig config, Results results, FrameAutoArranger autoArrangeFrames) {
         this.dataModel = dataModel;
+        this.config = config;
         this.results = results;
-        this.config = new GeneticAlgorithmConfig();
-        this.chart = new Chart(this);
+        this.chart = new Chart(this, autoArrangeFrames);
     }
 
     @Override
@@ -38,11 +41,11 @@ public class RouteOptimizer extends Thread {
 
         // Konfiguracja silnika genetycznego
         Engine<EnumGene<Integer>, Double> engine = Engine.builder(fitnessFunction, genotypeFactory)
-                .populationSize(config.getPopulationSize())
+                .populationSize(config.populationSize())
                 .optimize(Optimize.MINIMUM)
                 .alterers(
-                        new SwapMutator<>(config.getMutationProbability()),
-                        new PartiallyMatchedCrossover<>(config.getCrossoverProbability())
+                        new SwapMutator<>(config.mutationProbability()),
+                        new PartiallyMatchedCrossover<>(config.crossoverProbability())
                 )
                 .build();
 
@@ -52,19 +55,16 @@ public class RouteOptimizer extends Thread {
         try {
             // Uruchomienie ewolucji
             Phenotype<EnumGene<Integer>, Double> result = engine.stream()
-                    .limit(Limits.bySteadyFitness(config.getSteadyFitnessGenerationLimit()))
-                    .limit(config.getGenerationLimit())
-                    //.peek(this::printBestOfGeneration)
+                    .limit(Limits.bySteadyFitness(config.steadyFitnessGenerationLimit()))
+                    .limit(config.generationLimit())
                     .peek(this::updateChart)
                     .collect(EvolutionResult.toBestPhenotype());
 
             //Dodanie rezultatu
             results.add(convertPhenotypeToRoute(result));
 
-            //Zapis wykresu do pliku
-            chart.saveToFile();
         } catch (CancellationException e) {
-            System.out.println("Evolution was cancelled.");
+            chart.close();
         }
     }
 
@@ -102,12 +102,17 @@ public class RouteOptimizer extends Thread {
         return new Route(nodes, phenotype.fitness(), dataModel.getCostUnit());
     }
 
-    private void printBestOfGeneration(EvolutionResult<EnumGene<Integer>, Double> result) {
-        Route route = convertPhenotypeToRoute(result.bestPhenotype());
-        System.out.printf("Generation: %d\n%s\n", result.generation(), route);
+    public void setRouteOptimizerHandle(Future<?> routeOptimizerHandle) {
+        this.routeOptimizerHandle = routeOptimizerHandle;
     }
 
-    public GeneticAlgorithmConfig getConfig() {
-        return config;
+    public Chart getChart() {
+        return chart;
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        routeOptimizerHandle.cancel(true);
     }
 }

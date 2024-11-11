@@ -83,15 +83,15 @@ public class ResultsChart extends JPanel {
         plot.setDomainGridlineStroke(new BasicStroke(0.5f));
 
         NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-        if (results.size() < 40) {
+        if (results.size() < 30) {
             domainAxis.setTickUnit(new org.jfree.chart.axis.NumberTickUnit(1));
-        } else if (results.size() < 140) {
+        } else if (results.size() < 100) {
             domainAxis.setTickUnit(new org.jfree.chart.axis.NumberTickUnit(10));
         }
         domainAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 12));
 
         ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(800, 600));
+        chartPanel.setPreferredSize(new Dimension(600, 400));
         this.setLayout(new BorderLayout());
         this.add(chartPanel, BorderLayout.CENTER);
     }
