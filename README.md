@@ -13,7 +13,7 @@ Szczegóły dotyczące implementacji algorytmu oraz analiza wyników dostępne s
 - **Generowanie danych wejściowych**: Program automatycznie pobiera współrzędne geograficzne miast i oblicza odległości między nimi, wykorzystując API **Nominatim** oraz **OSRM**.
 - **Optymalizacja trasy**: Implementacja algorytmu genetycznego pozwala znaleźć optymalną trasę przejścia przez wszystkie miasta.
 - **Elastyczna konfiguracja**: Parametry algorytmu, takie jak wielkość populacji, liczba generacji, prawdopodobieństwo mutacji i krzyżowania, można łatwo konfigurować w graficznym interfejsie użytkownika.
-- **Analiza wyników**: Program umożliwia wielokrotne uruchomienie algorytmu i analizę wyników pomocy generowanych wykresów.
+- **Analiza wyników**: Program umożliwia wielokrotne uruchamianie algorytmu oraz analizę wyników za pomocą generowanych wykresów.
 
 ## Technologie i narzędzia
 
