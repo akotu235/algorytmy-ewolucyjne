@@ -75,3 +75,13 @@ Szczegóły dotyczące implementacji algorytmu oraz analiza wyników dostępne s
 - Przykładowe okno wyświetlające wyniki:
 
 ![img4.jpg](report/img/img4.jpg)
+
+### Licencja
+Rozpowszechniane na licencji MIT. Zobacz [LICENSE](https://github.com/akotu235/algorytmy-ewolucyjne/blob/master/LICENSE), aby uzyskać więcej informacji.
+
+[![GitHub](https://img.shields.io/github/license/akotu235/algorytmy-ewolucyjne)](https://github.com/akotu235/algorytmy-ewolucyjne/blob/master/LICENSE)
+
+### Kontakt
+Andrzej – [Zgłoś problem lub zadaj pytanie online](https://akotu235.github.io/)
+
+Link do projektu: [https://github.com/akotu235/algorytmy-ewolucyjne](https://github.com/akotu235/algorytmy-ewolucyjne)
