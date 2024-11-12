@@ -120,7 +120,7 @@ Obiekt `DataModel` jest zapisywany do&nbsp;pliku, który wczytany jest przez apl
 
 1. **Inicjalizacja**
     * Wczytaj dane dla algorytmu `DataModel`
-    * Utwórz populację początkową genotypów (ścieżek) o&nbsp;rozmiarze `POPULATION_SIZE`.
+    * Utwórz populację początkową genotypów (ścieżek) o&nbsp;rozmiarze `populationSize`.
     * Każdy genotyp to&nbsp;permutacja miast.
 
 2. **Definicja funkcji oceny (fitness)**
@@ -133,16 +133,11 @@ Obiekt `DataModel` jest zapisywany do&nbsp;pliku, który wczytany jest przez apl
    * Powtórz, aż&nbsp;spełnione zostanie kryterium stopu (np.&nbsp;limit generacji lub stabilizacja fitnessu):
      * **Wybierz** osobniki do&nbsp;krzyżowania.
      * **Rekombinacja (crossover)**: dla wybranych par rodziców zastosuj operator PMX, by&nbsp;wymienić fragmenty ich genotypów i&nbsp;uzyskać nowe potomstwo.
-     * **Mutacja**: dla każdego potomka, z&nbsp;prawdopodobieństwem `MUTATION_PROBABILITY`, zamień dwa losowo wybrane miasta w&nbsp;trasie.
+     * **Mutacja**: dla każdego potomka, z&nbsp;prawdopodobieństwem `mutationProbability`, zamień dwa losowo wybrane miasta w&nbsp;trasie.
      * **Zastąp** starą populację osobnikami wybranymi na&nbsp;podstawie ich fitnessu.
 
-4. **Aktualizacja najlepszych wyników**
-   * Zapisz i&nbsp;wyświetl najlepszą ścieżkę (trasę) w&nbsp;każdej generacji.
-   * Aktualizuj wykres.
-
-5. **Zakończenie**
+4. **Zakończenie**
    * Wyświetl ostateczne rozwiązanie — najlepszą znalezioną trasę i&nbsp;jej długość.
-   * Zapisz wykres do&nbsp;pliku.
 
    
 **Szczegóły implementacji**:
@@ -155,15 +150,19 @@ Parametry są&nbsp;zdefiniowane w&nbsp;klasie `GeneticAlgorithmConfig`, co&nbsp;
 
    **Parametry**:
 
-   * **Wielkość populacji** (`POPULATION_SIZE`) - Liczba osobników w&nbsp;populacji; większa populacja sprzyja różnorodności rozwiązań, ale wydłuża czas obliczeń.
+   * **Ilość uruchomień** (`executionCount`) - Liczba wielokrotnych uruchomień algorytmu, co umożliwia analizę stabilności wyników i ocenę ich średnich wartości. Większa liczba uruchomień poprawia dokładność oceny wyników, ale wydłuża czas obliczeń.
+   
+   * **Liczba wątków** (`threadPoolSize`) - Określa liczbę wątków używanych do równoległego przetwarzania obliczeń algorytmu, co przyspiesza czas obliczeń przy odpowiednich zasobach sprzętowych.
 
-   * **Limit pokoleń** (`GENERATION_LIMIT`) - Maksymalna liczba generacji, po&nbsp;której algorytm kończy działanie, co&nbsp;pozwala kontrolować czas obliczeń przy bardziej czasochłonnych zadaniach.
+   * **Wielkość populacji** (`populationSize`) - Liczba osobników w&nbsp;populacji; większa populacja sprzyja różnorodności rozwiązań, ale wydłuża czas obliczeń.
 
-   * **Próg stagnacji** (`STEADY_FITNESS_GENERATION_LIMIT`) - Liczba generacji, po&nbsp;której algorytm kończy działanie, jeśli wartości fitness pozostają bez poprawy. Umożliwia to&nbsp;wcześniejsze zakończenie poszukiwań, gdy algorytm nie znajduje lepszych rozwiązań.
+   * **Limit pokoleń** (`generationLimit`) - Maksymalna liczba generacji, po&nbsp;której algorytm kończy działanie, co&nbsp;pozwala kontrolować czas obliczeń przy bardziej czasochłonnych zadaniach.
 
-   * **Prawdopodobieństwo mutacji** (`MUTATION_PROBABILITY`) - Prawdopodobieństwo mutacji dla każdego osobnika w&nbsp;populacji, co&nbsp;zwiększa różnorodność i&nbsp;zapobiega stagnacji w&nbsp;poszukiwaniu rozwiązań.
+   * **Próg stagnacji** (`steadyFitnessGenerationLimit`) - Liczba generacji, po&nbsp;której algorytm kończy działanie, jeśli wartości fitness pozostają bez poprawy. Umożliwia to&nbsp;wcześniejsze zakończenie poszukiwań, gdy algorytm nie znajduje lepszych rozwiązań.
 
-   * **Prawdopodobieństwo krzyżowania** (`PMX_CROSSOVER_PROBABILITY`) - Prawdopodobieństwo użycia operatora krzyżowania PMX (*Partially Matched Crossover*) podczas tworzenia nowego pokolenia. Operator krzyżowania umożliwia wymianę genotypów między osobnikami, co&nbsp;jest kluczowe dla uzyskania lepszych rozwiązań.
+   * **Prawdopodobieństwo mutacji** (`mutationProbability`) - Prawdopodobieństwo mutacji dla każdego osobnika w&nbsp;populacji, co&nbsp;zwiększa różnorodność i&nbsp;zapobiega stagnacji w&nbsp;poszukiwaniu rozwiązań.
+
+   * **Prawdopodobieństwo krzyżowania** (`crossoverProbability`) - Prawdopodobieństwo użycia operatora krzyżowania PMX (*Partially Matched Crossover*) podczas tworzenia nowego pokolenia. Operator krzyżowania umożliwia wymianę genotypów między osobnikami, co&nbsp;jest kluczowe dla uzyskania lepszych rozwiązań.
 
 3. **Operatorzy genetyczni**:
    * **Mutacja**: Operator `SwapMutator`, który losowo zamienia kolejność miast w&nbsp;ścieżce.
@@ -176,7 +175,7 @@ Funkcja ta&nbsp;służy do&nbsp;oceny uzyskanych rozwiązań na&nbsp;podstawie d
 Do&nbsp;wizualizacji przebiegu ewolucji zastosowano bibliotekę `JFreeChart` [[6]](#bibliografia), która umożliwia dynamiczne monitorowanie postępów algorytmu w&nbsp;czasie rzeczywistym. Wykresy ukazują zmiany wartości fitness najlepszych rozwiązań w&nbsp;kolejnych generacjach, a&nbsp;także wartości najgorsze oraz średnie dla całej generacji, co&nbsp;ułatwia ocenę efektywności algorytmu.
 
 6. **Wykonanie algorytmu**: 
-Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązanie w&nbsp;każdej generacji i&nbsp;aktualizuje wykres w&nbsp;interfejsie graficznym. Po&nbsp;zakończeniu ewolucji algorytm zapisuje wykres do&nbsp;pliku oraz wyświetla najlepsze znalezione rozwiązanie.
+Algorytm działa w&nbsp;oddzielnym wątku, który wyznacza najlepsze rozwiązanie w&nbsp;każdej generacji i&nbsp;aktualizuje wykres w&nbsp;interfejsie graficznym. Po&nbsp;zakończeniu ewolucji algorytm wyświetla najlepsze znalezione rozwiązanie.
 
 7. **Interfejs użytkownika**:  
 Prosty i&nbsp;funkcjonalny interfejs, stworzony przy użyciu biblioteki `Swing` [[9]](#bibliografia), pozwalający na&nbsp;konfigurację parametrów i&nbsp;uruchamianie algorytmu ewolucyjnego oraz na&nbsp;generowanie i&nbsp;ładowanie modelu danych.
