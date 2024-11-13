@@ -66,6 +66,7 @@ public class RouteOptimizer extends Thread {
         } catch (CancellationException e) {
             chart.close();
         }
+        chart.close();
     }
 
     //Funkcja fitness
