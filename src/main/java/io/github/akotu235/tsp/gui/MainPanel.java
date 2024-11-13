@@ -31,7 +31,7 @@ public class MainPanel extends JPanel {
     private ExecutorService executor;
 
     public MainPanel() {
-        this.charts = new ChartManager();
+        charts = new ChartManager();
         setLayout(new BorderLayout());
 
         executionCountField = new JTextField("10");
@@ -110,11 +110,9 @@ public class MainPanel extends JPanel {
         GeneticAlgorithmConfig config = getConfig();
 
         terminateExecutor();
-        this.executor = Executors.newFixedThreadPool(config.threadPoolSize());
+        executor = Executors.newFixedThreadPool(config.threadPoolSize());
 
         FrameAutoArranger autoArrangeFrames = new FrameAutoArranger(Math.min(config.threadPoolSize(), config.executionCount()));
-
-        charts.closeAll();
 
         for (int i = 0; i < config.executionCount(); i++) {
             RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, config, results, autoArrangeFrames);
@@ -148,15 +146,14 @@ public class MainPanel extends JPanel {
             dataModelFile = fileChooser.getSelectedFile();
             fileLabel.setText("Wybrano plik: " + dataModelFile.getName());
             results = new Results(dataModelFile.getName());
+            terminateExecutor();
         }
-
-        charts.closeAll();
-        terminateExecutor();
     }
 
     private void terminateExecutor() {
         if (executor != null) {
             executor.shutdownNow();
         }
+        charts.closeAll();
     }
 }
