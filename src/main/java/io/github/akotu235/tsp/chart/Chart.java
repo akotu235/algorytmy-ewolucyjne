@@ -1,6 +1,6 @@
 package io.github.akotu235.tsp.chart;
 
-import io.github.akotu235.tsp.gui.FrameAutoArranger;
+import io.github.akotu235.tsp.gui.FrameLocationManager;
 import io.github.akotu235.tsp.optimization.RouteOptimizer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -22,12 +22,15 @@ public class Chart extends JFrame {
     private final XYSeries worstSeries;
     private final JFreeChart chart;
     private final RouteOptimizer routeOptimizer;
+    private final FrameLocationManager frameLocationManager;
+    private int slot;
     private double minY = Double.MAX_VALUE;
     private double maxY = Double.MIN_VALUE;
 
-    public Chart(RouteOptimizer routeOptimizer, FrameAutoArranger frameAutoArranger) {
+    public Chart(RouteOptimizer routeOptimizer, String costUnit, FrameLocationManager frameLocationManager) {
         setTitle("Chart");
         this.routeOptimizer = routeOptimizer;
+        this.frameLocationManager = frameLocationManager;
         bestSeries = new XYSeries("Najlepszy Wynik");
         avgSeries = new XYSeries("Średni Wynik");
         worstSeries = new XYSeries("Najgorszy Wynik");
@@ -40,7 +43,7 @@ public class Chart extends JFrame {
         chart = ChartFactory.createXYLineChart(
                 "Postęp w Optymalizacji",
                 "Generacja",
-                "Wartość Fitness",
+                "Wartość Fitness [" + costUnit + "]",
                 dataset,
                 PlotOrientation.VERTICAL,
                 true,
@@ -68,7 +71,6 @@ public class Chart extends JFrame {
             }
         });
 
-        frameAutoArranger.setChartFrameLocation(this);
         setVisible(false);
     }
 
@@ -95,6 +97,14 @@ public class Chart extends JFrame {
     }
 
     private void onClose() {
+        frameLocationManager.releaseSlot(slot);
         routeOptimizer.interrupt();
+    }
+
+    public void open() {
+        slot = frameLocationManager.setChartFrameLocation(this);
+        setFocusableWindowState(false);
+        setVisible(true);
+        setFocusableWindowState(true);
     }
 }

@@ -15,6 +15,7 @@ public class Results extends ArrayList<Result> {
         this.name = name;
         this.costUnit = costUnit;
         this.resultsFrame = new ResultsFrame(this);
+        FrameLocationManager.setResultsFrameLocation(resultsFrame);
     }
 
     public synchronized void addResult(Result result) {

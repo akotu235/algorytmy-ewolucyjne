@@ -1,6 +1,5 @@
 package io.github.akotu235.tsp.gui;
 
-import io.github.akotu235.tsp.chart.ChartManager;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
 import io.github.akotu235.tsp.model.DataModel;
 import io.github.akotu235.tsp.model.Results;
@@ -16,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class MainPanel extends JPanel {
-
     private final JTextField executionCountField;
     private final JTextField threadPoolSizeField;
     private final JTextField populationSizeField;
@@ -25,20 +23,18 @@ public class MainPanel extends JPanel {
     private final JTextField mutationProbabilityField;
     private final JTextField crossoverProbabilityField;
     private final JLabel fileLabel;
-    private final ChartManager charts;
-    private File dataModelFile;
+    private DataModel dataModel;
     private Results results;
     private ExecutorService executor;
 
     public MainPanel() {
-        charts = new ChartManager();
         setLayout(new BorderLayout());
 
         executionCountField = new JTextField("10");
         threadPoolSizeField = new JTextField("3");
-        populationSizeField = new JTextField("50000");
+        populationSizeField = new JTextField("10000");
         generationLimitField = new JTextField("1000");
-        steadyFitnessLimitField = new JTextField("50");
+        steadyFitnessLimitField = new JTextField("100");
         mutationProbabilityField = new JTextField("0.3");
         crossoverProbabilityField = new JTextField("0.3");
 
@@ -101,24 +97,22 @@ public class MainPanel extends JPanel {
     }
 
     private void runAlgorithm() {
-        if (dataModelFile == null) {
+        if (dataModel == null) {
             JOptionPane.showMessageDialog(this, "Proszę wybrać plik z modelem danych.");
             return;
         }
 
-        DataModel dataModel = DeserializeDataModel.loadDataModelFromFile(dataModelFile.getAbsolutePath());
         GeneticAlgorithmConfig config = getConfig();
 
         terminateExecutor();
         executor = Executors.newFixedThreadPool(config.threadPoolSize());
 
-        FrameAutoArranger autoArrangeFrames = new FrameAutoArranger(Math.min(config.threadPoolSize(), config.executionCount()));
+        FrameLocationManager frameLocationManager = new FrameLocationManager();
 
         for (int i = 0; i < config.executionCount(); i++) {
-            RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, config, results, autoArrangeFrames);
+            RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, config, results, frameLocationManager);
             Future<?> routeOptimizerHandle = executor.submit(routeOptimizer);
             routeOptimizer.setRouteOptimizerHandle(routeOptimizerHandle);
-            charts.add(routeOptimizer.getChart());
         }
         executor.shutdown();
     }
@@ -143,7 +137,9 @@ public class MainPanel extends JPanel {
         int result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            dataModelFile = fileChooser.getSelectedFile();
+            terminateExecutor();
+            File dataModelFile = fileChooser.getSelectedFile();
+            dataModel = DeserializeDataModel.loadDataModelFromFile(dataModelFile.getAbsolutePath());
             fileLabel.setText("Wybrano plik: " + dataModelFile.getName());
             results = new Results(dataModelFile.getName(), dataModel.getCostUnit());
         }
@@ -153,6 +149,5 @@ public class MainPanel extends JPanel {
         if (executor != null) {
             executor.shutdownNow();
         }
-        charts.closeAll();
     }
 }

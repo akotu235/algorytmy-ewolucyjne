@@ -10,6 +10,7 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(new BorderLayout());
+        FrameLocationManager.setMainFrameLocation(this);
 
         MainPanel mainPanel = new MainPanel();
         add(mainPanel);

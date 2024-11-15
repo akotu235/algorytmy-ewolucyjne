@@ -2,7 +2,7 @@ package io.github.akotu235.tsp.optimization;
 
 import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
-import io.github.akotu235.tsp.gui.FrameAutoArranger;
+import io.github.akotu235.tsp.gui.FrameLocationManager;
 import io.github.akotu235.tsp.model.*;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
@@ -26,11 +26,11 @@ public class RouteOptimizer extends Thread {
     private final Results results;
     private Future<?> routeOptimizerHandle;
 
-    public RouteOptimizer(DataModel dataModel, GeneticAlgorithmConfig config, Results results, FrameAutoArranger autoArrangeFrames) {
+    public RouteOptimizer(DataModel dataModel, GeneticAlgorithmConfig config, Results results, FrameLocationManager frameLocationManager) {
         this.dataModel = dataModel;
         this.config = config;
         this.results = results;
-        this.chart = new Chart(this, autoArrangeFrames);
+        this.chart = new Chart(this, dataModel.getCostUnit(), frameLocationManager);
     }
 
     @Override
@@ -52,9 +52,11 @@ public class RouteOptimizer extends Thread {
                 .build();
 
         //Włączenie wykresu
-        chart.setVisible(true);
+        chart.open();
 
+        //Rozpoczęcie pomiaru czasu
         Instant start = Instant.now();
+
         try {
             // Uruchomienie ewolucji
             Phenotype<EnumGene<Integer>, Double> result = engine.stream()
@@ -63,11 +65,11 @@ public class RouteOptimizer extends Thread {
                     .peek(this::updateChart)
                     .collect(EvolutionResult.toBestPhenotype());
 
+            //Zakończenie pomiaru czasu
             Instant end = Instant.now();
-            Duration duration = Duration.between(start, end);
 
             //Dodanie rezultatu
-            results.addResult(new Result(convertPhenotypeToRoute(result), duration, result.generation()));
+            results.addResult(new Result(convertPhenotypeToRoute(result), Duration.between(start, end), result.generation()));
 
         } catch (CancellationException e) {
             chart.close();
@@ -111,10 +113,6 @@ public class RouteOptimizer extends Thread {
 
     public void setRouteOptimizerHandle(Future<?> routeOptimizerHandle) {
         this.routeOptimizerHandle = routeOptimizerHandle;
-    }
-
-    public Chart getChart() {
-        return chart;
     }
 
     @Override
