@@ -1,63 +1,60 @@
 package io.github.akotu235.tsp.model;
 
+import io.github.akotu235.tsp.gui.FrameLocationManager;
 import io.github.akotu235.tsp.gui.ResultsFrame;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class Results {
-    private final List<Route> results;
+public class Results extends ArrayList<Result> {
     private final String name;
+    private final String costUnit;
     private final ResultsFrame resultsFrame;
 
-    public Results(String name) {
-        this.results = new ArrayList<>();
+    public Results(String name, String costUnit) {
         this.name = name;
+        this.costUnit = costUnit;
         this.resultsFrame = new ResultsFrame(this);
     }
 
-    public synchronized void add(Route route) {
-        this.results.add(route);
+    public synchronized void addResult(Result result) {
+        add(result);
         resultsFrame.refresh();
-    }
-
-    public int size() {
-        return this.results.size();
-    }
-
-    public List<Route> getResults() {
-        return results;
     }
 
     public String getName() {
         return name;
     }
 
-    public Route getShortestRoute() {
-        return results.stream()
-                .min(Comparator.comparing(Route::totalCost))
+    public String getCostUnit() {
+        return costUnit;
+    }
+
+    public Result getBestResult() {
+        return stream()
+                .min(Comparator.comparing(result -> result.route().totalCost()))
                 .orElse(null);
     }
 
-    public double getAverage(){
-      return results.stream().mapToDouble(Route::totalCost).average().orElse(0.0);
+    public double getAvgTotalCost() {
+        return stream().mapToDouble(result -> result.route().totalCost()).average().orElse(0.0);
     }
 
-    public double getStdDev(){
-        return Math.sqrt(results.stream().mapToDouble(r -> Math.pow(r.totalCost() - getAverage(), 2)).average().orElse(0.0));
+    public double getStdDev() {
+        return Math.sqrt(stream().mapToDouble(result -> Math.pow(result.route().totalCost() - getAvgTotalCost(), 2)).average().orElse(0.0));
     }
 
-    public double getBestCost(){
-        return getShortestRoute().totalCost();
+    public double getBestCost() {
+        return getBestResult().route().totalCost();
     }
 
-    @Override
-    public String toString() {
-        return IntStream.range(0, results.size())
-                .mapToObj(i -> String.format("%d. %.0f %s", i + 1, results.get(i).totalCost(), results.get(i).costUnit()))
-                .collect(Collectors.joining("\n"));
+    public String getAvgDurationInSeconds() {
+        double avg = stream().mapToLong(result -> result.duration().getSeconds()).average().orElse(0.0);
+        return String.format("%.0f", avg);
+    }
+
+    public String getAvgGeneration() {
+        double avg = stream().mapToLong(Result::generation).average().orElse(0.0);
+        return String.format("%.0f", avg);
     }
 }

@@ -5,6 +5,7 @@ import io.github.akotu235.tsp.model.Results;
 import io.github.akotu235.tsp.model.Route;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ResultsFrame extends JFrame {
@@ -12,19 +13,22 @@ public class ResultsFrame extends JFrame {
 
     public ResultsFrame(Results results) {
         setTitle("Result");
-        setSize(400, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.results = results;
     }
 
     public void refresh() {
+        if (!isActive()) {
+            setFocusableWindowState(false);
+        }
         getContentPane().removeAll();
         add(getPanel());
         repaint();
         revalidate();
         pack();
         setVisible(true);
+        setFocusableWindowState(true);
     }
 
     private JPanel getPanel() {
@@ -46,20 +50,30 @@ public class ResultsFrame extends JFrame {
     }
 
     private JComponent getBestResultsComponent() {
-        JTextArea resultTextArea = new JTextArea(results.toString());
-        resultTextArea.setEditable(false);
-        resultTextArea.setBorder(BorderFactory.createTitledBorder("Najlepsze wyniki"));
-        JScrollPane scrollPane = new JScrollPane(resultTextArea);
+        String[] columnNames = {"", "Koszt [" + results.getCostUnit() + "]", "Czas [s]", "Generacja"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        model.addRow(new String[]{"średnio", String.format("%.0f", results.getAvgTotalCost()), results.getAvgDurationInSeconds(), results.getAvgGeneration()});
+        for (int i = 0; i < results.size(); i++) {
+            String totalCost = String.format("%.0f", results.get(i).route().totalCost());
+            String duration = String.valueOf(results.get(i).duration().getSeconds());
+            String generation = String.valueOf(results.get(i).generation());
+            Object[] row = {i + 1, totalCost, duration, generation};
+            model.addRow(row);
+        }
+        JTable table = new JTable(model);
+        table.setEnabled(false);
+        table.getColumnModel().getColumn(0).setPreferredWidth(70);
+        JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(null);
-        scrollPane.setPreferredSize(new Dimension(120, 200));
+        scrollPane.setPreferredSize(new Dimension(260, 200));
         return scrollPane;
     }
 
     private String getShortestRoute() {
-        Route bestRoute = results.getShortestRoute();
+        Route bestRoute = results.getBestResult().route();
         if (bestRoute == null) {
             return "";
         }
-        return results.getShortestRoute().toString();
+        return results.getBestResult().route().toString();
     }
 }

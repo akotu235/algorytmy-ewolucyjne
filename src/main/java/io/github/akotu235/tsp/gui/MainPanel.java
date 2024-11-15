@@ -145,8 +145,7 @@ public class MainPanel extends JPanel {
         if (result == JFileChooser.APPROVE_OPTION) {
             dataModelFile = fileChooser.getSelectedFile();
             fileLabel.setText("Wybrano plik: " + dataModelFile.getName());
-            results = new Results(dataModelFile.getName());
-            terminateExecutor();
+            results = new Results(dataModelFile.getName(), dataModel.getCostUnit());
         }
     }
 

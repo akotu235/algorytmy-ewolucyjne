@@ -10,6 +10,8 @@ import io.jenetics.engine.EvolutionResult;
 import io.jenetics.engine.Limits;
 
 import javax.swing.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -52,6 +54,7 @@ public class RouteOptimizer extends Thread {
         //Włączenie wykresu
         chart.setVisible(true);
 
+        Instant start = Instant.now();
         try {
             // Uruchomienie ewolucji
             Phenotype<EnumGene<Integer>, Double> result = engine.stream()
@@ -60,8 +63,11 @@ public class RouteOptimizer extends Thread {
                     .peek(this::updateChart)
                     .collect(EvolutionResult.toBestPhenotype());
 
+            Instant end = Instant.now();
+            Duration duration = Duration.between(start, end);
+
             //Dodanie rezultatu
-            results.add(convertPhenotypeToRoute(result));
+            results.addResult(new Result(convertPhenotypeToRoute(result), duration, result.generation()));
 
         } catch (CancellationException e) {
             chart.close();
