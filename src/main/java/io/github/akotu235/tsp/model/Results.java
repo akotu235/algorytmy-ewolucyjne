@@ -49,13 +49,16 @@ public class Results extends ArrayList<Result> {
         return getBestResult().route().totalCost();
     }
 
-    public String getAvgDurationInSeconds() {
-        double avg = stream().mapToLong(result -> result.duration().getSeconds()).average().orElse(0.0);
-        return String.format("%.0f", avg);
+    public double getAvgDurationInSeconds() {
+        double avg = stream()
+                .mapToLong(result -> result.duration().toMillis())
+                .average()
+                .orElse(0.0);
+        return avg / 1000;
     }
 
-    public String getAvgGeneration() {
+    public int getAvgGeneration() {
         double avg = stream().mapToLong(Result::generation).average().orElse(0.0);
-        return String.format("%.0f", avg);
+        return (int) Math.round(avg);
     }
 }

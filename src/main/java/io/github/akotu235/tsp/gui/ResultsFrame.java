@@ -36,7 +36,7 @@ public class ResultsFrame extends JFrame {
         JPanel chartPanel = new ResultsChart(results);
         panel.add(chartPanel, BorderLayout.CENTER);
         panel.add(getBestResultComponent(), BorderLayout.SOUTH);
-        panel.add(getBestResultsComponent(), BorderLayout.EAST);
+        panel.add(getResultsAndStatsComponent(), BorderLayout.EAST);
         return panel;
     }
 
@@ -50,23 +50,71 @@ public class ResultsFrame extends JFrame {
     }
 
     private JComponent getBestResultsComponent() {
+        JTable table = getBestResultsTable();
+        table.setEnabled(false);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Wyniki"));
+        scrollPane.setBackground(Color.WHITE);
+        return scrollPane;
+    }
+
+    private JTable getBestResultsTable() {
         String[] columnNames = {"", "Koszt [" + results.getCostUnit() + "]", "Czas [s]", "Generacja"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        model.addRow(new String[]{"średnio", String.format("%.0f", results.getAvgTotalCost()), results.getAvgDurationInSeconds(), results.getAvgGeneration()});
         for (int i = 0; i < results.size(); i++) {
             String totalCost = String.format("%.0f", results.get(i).route().totalCost());
-            String duration = String.valueOf(results.get(i).duration().getSeconds());
+            String duration = String.format("%.2f", (double) results.get(i).duration().toMillis() / 1000);
             String generation = String.valueOf(results.get(i).generation());
             Object[] row = {i + 1, totalCost, duration, generation};
             model.addRow(row);
         }
-        JTable table = new JTable(model);
-        table.setEnabled(false);
-        table.getColumnModel().getColumn(0).setPreferredWidth(70);
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(null);
-        scrollPane.setPreferredSize(new Dimension(260, 200));
-        return scrollPane;
+        return new JTable(model);
+    }
+
+    private JComponent getStatsComponent() {
+        JPanel statsPanel = new JPanel(new GridBagLayout());
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Statystyki"));
+        statsPanel.setBackground(Color.WHITE);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+
+        statsPanel.add(new JLabel("Średnia długość trasy:"), gbc);
+        gbc.gridx = 1;
+        statsPanel.add(new JLabel(String.format("%.0f %s", results.getAvgTotalCost(), results.getCostUnit())), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        statsPanel.add(new JLabel("Odchylenie standardowe:"), gbc);
+        gbc.gridx = 1;
+        statsPanel.add(new JLabel(String.format("%.0f %s", results.getStdDev(), results.getCostUnit())), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        statsPanel.add(new JLabel("Średni czas obliczeń:"), gbc);
+        gbc.gridx = 1;
+        statsPanel.add(new JLabel(String.format("%.2f s", results.getAvgDurationInSeconds())), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        statsPanel.add(new JLabel("Średnia generacja optimum:"), gbc);
+        gbc.gridx = 1;
+        statsPanel.add(new JLabel(String.valueOf(results.getAvgGeneration())), gbc);
+
+        return statsPanel;
+    }
+
+    private JComponent getResultsAndStatsComponent() {
+        JPanel resultsAndStatsPanel = new JPanel(new BorderLayout());
+        resultsAndStatsPanel.setPreferredSize(new Dimension(300, resultsAndStatsPanel.getPreferredSize().height));
+        resultsAndStatsPanel.add(getBestResultsComponent(), BorderLayout.CENTER);
+        resultsAndStatsPanel.add(getStatsComponent(), BorderLayout.SOUTH);
+
+        return resultsAndStatsPanel;
     }
 
     private String getShortestRoute() {
