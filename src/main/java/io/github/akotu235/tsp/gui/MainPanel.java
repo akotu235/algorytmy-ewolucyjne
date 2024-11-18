@@ -69,14 +69,22 @@ public class MainPanel extends JPanel {
         chosenFilePanel.add(fileLabel);
         filePanel.add(chosenFilePanel);
 
+        filePanel.setPreferredSize(new Dimension(600, filePanel.getPreferredSize().height));
+
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
+        settingsPanel.setBorder(BorderFactory.createTitledBorder("Ustawienia"));
+        settingsPanel.add(new JLabel("Ilość uruchomień:"));
+        settingsPanel.add(executionCountField);
+        settingsPanel.add(new JLabel("Ilość wątków:"));
+        settingsPanel.add(threadPoolSizeField);
+        closeChartsCheckbox = new JCheckBox("Zamykaj wykresy postępu po zakończeniu algorytmu");
+        closeChartsCheckbox.setSelected(true);
+        settingsPanel.add(closeChartsCheckbox);
+
         JPanel paramPanel = new JPanel();
         paramPanel.setLayout(new BoxLayout(paramPanel, BoxLayout.Y_AXIS));
         paramPanel.setBorder(BorderFactory.createTitledBorder("Parametry Algorytmu"));
-        paramPanel.setPreferredSize(new Dimension(600, 300));
-        paramPanel.add(new JLabel("Ilość uruchomień:"));
-        paramPanel.add(executionCountField);
-        paramPanel.add(new JLabel("Ilość wątków:"));
-        paramPanel.add(threadPoolSizeField);
         paramPanel.add(new JLabel("Wielkość populacji:"));
         paramPanel.add(populationSizeField);
         paramPanel.add(new JLabel("Limit pokoleń:"));
@@ -87,18 +95,20 @@ public class MainPanel extends JPanel {
         paramPanel.add(mutationProbabilityField);
         paramPanel.add(new JLabel("Prawdopodobieństwo krzyżowania:"));
         paramPanel.add(crossoverProbabilityField);
-        closeChartsCheckbox = new JCheckBox("Zamykaj wykresy postępu po zakończeniu algorytmu");
-        closeChartsCheckbox.setSelected(true);
-        paramPanel.add(closeChartsCheckbox);
+
+        JPanel configurationPanel = new JPanel();
+        configurationPanel.setLayout(new BorderLayout());
+
+        configurationPanel.add(filePanel, BorderLayout.NORTH);
+        configurationPanel.add(settingsPanel, BorderLayout.CENTER);
+        configurationPanel.add(paramPanel, BorderLayout.SOUTH);
 
         JButton runAlgorithmButton = new JButton("Uruchom Algorytm");
         runAlgorithmButton.addActionListener(e -> runAlgorithm());
         runAlgorithmButton.setPreferredSize(new Dimension(200, 50));
 
-        add(filePanel, BorderLayout.NORTH);
-        add(paramPanel, BorderLayout.CENTER);
+        add(configurationPanel, BorderLayout.CENTER);
         add(runAlgorithmButton, BorderLayout.SOUTH);
-
     }
 
     private void showDataModelFrame(DataModelFrame dataModelFrame) {
@@ -162,7 +172,7 @@ public class MainPanel extends JPanel {
     }
 
     private void terminateExecutor() {
-        for (Chart chart: charts){
+        for (Chart chart : charts) {
             chart.close();
         }
 
