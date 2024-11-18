@@ -74,7 +74,10 @@ public class RouteOptimizer extends Thread {
         } catch (CancellationException e) {
             chart.close();
         }
-        chart.close();
+
+        if (config.closeCharts()) {
+            chart.close();
+        }
     }
 
     //Funkcja fitness
@@ -113,6 +116,10 @@ public class RouteOptimizer extends Thread {
 
     public void setRouteOptimizerHandle(Future<?> routeOptimizerHandle) {
         this.routeOptimizerHandle = routeOptimizerHandle;
+    }
+
+    public Chart getChart() {
+        return chart;
     }
 
     @Override

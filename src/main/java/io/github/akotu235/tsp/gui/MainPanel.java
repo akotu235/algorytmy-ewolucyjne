@@ -1,5 +1,6 @@
 package io.github.akotu235.tsp.gui;
 
+import io.github.akotu235.tsp.chart.Chart;
 import io.github.akotu235.tsp.configuration.GeneticAlgorithmConfig;
 import io.github.akotu235.tsp.model.DataModel;
 import io.github.akotu235.tsp.model.Results;
@@ -10,6 +11,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -23,12 +25,16 @@ public class MainPanel extends JPanel {
     private final JTextField mutationProbabilityField;
     private final JTextField crossoverProbabilityField;
     private final JLabel fileLabel;
+    private final JCheckBox closeChartsCheckbox;
     private DataModel dataModel;
     private Results results;
     private ExecutorService executor;
+    private ArrayList<Chart> charts;
 
     public MainPanel() {
         setLayout(new BorderLayout());
+
+        charts = new ArrayList<>();
 
         executionCountField = new JTextField("10");
         threadPoolSizeField = new JTextField("3");
@@ -81,6 +87,9 @@ public class MainPanel extends JPanel {
         paramPanel.add(mutationProbabilityField);
         paramPanel.add(new JLabel("Prawdopodobieństwo krzyżowania:"));
         paramPanel.add(crossoverProbabilityField);
+        closeChartsCheckbox = new JCheckBox("Zamykaj wykresy postępu po zakończeniu algorytmu");
+        closeChartsCheckbox.setSelected(true);
+        paramPanel.add(closeChartsCheckbox);
 
         JButton runAlgorithmButton = new JButton("Uruchom Algorytm");
         runAlgorithmButton.addActionListener(e -> runAlgorithm());
@@ -89,6 +98,7 @@ public class MainPanel extends JPanel {
         add(filePanel, BorderLayout.NORTH);
         add(paramPanel, BorderLayout.CENTER);
         add(runAlgorithmButton, BorderLayout.SOUTH);
+
     }
 
     private void showDataModelFrame(DataModelFrame dataModelFrame) {
@@ -102,22 +112,27 @@ public class MainPanel extends JPanel {
             return;
         }
 
-        GeneticAlgorithmConfig config = getConfig();
+        GeneticAlgorithmConfig config = readConfig();
 
         terminateExecutor();
+
         executor = Executors.newFixedThreadPool(config.threadPoolSize());
 
         FrameLocationManager frameLocationManager = new FrameLocationManager();
+
+        charts = new ArrayList<>();
 
         for (int i = 0; i < config.executionCount(); i++) {
             RouteOptimizer routeOptimizer = new RouteOptimizer(dataModel, config, results, frameLocationManager);
             Future<?> routeOptimizerHandle = executor.submit(routeOptimizer);
             routeOptimizer.setRouteOptimizerHandle(routeOptimizerHandle);
+            charts.add(routeOptimizer.getChart());
         }
+
         executor.shutdown();
     }
 
-    private GeneticAlgorithmConfig getConfig() {
+    private GeneticAlgorithmConfig readConfig() {
         int executionCount = Integer.parseInt(executionCountField.getText());
         int threadPoolSize = Integer.parseInt(threadPoolSizeField.getText());
         int populationSize = Integer.parseInt(populationSizeField.getText());
@@ -125,8 +140,9 @@ public class MainPanel extends JPanel {
         int steadyFitnessLimit = Integer.parseInt(steadyFitnessLimitField.getText());
         double mutationProbability = Double.parseDouble(mutationProbabilityField.getText());
         double crossoverProbability = Double.parseDouble(crossoverProbabilityField.getText());
+        boolean closeCharts = closeChartsCheckbox.isSelected();
 
-        return new GeneticAlgorithmConfig(executionCount, threadPoolSize, populationSize, generationLimit, steadyFitnessLimit, mutationProbability, crossoverProbability);
+        return new GeneticAlgorithmConfig(executionCount, threadPoolSize, populationSize, generationLimit, steadyFitnessLimit, mutationProbability, crossoverProbability, closeCharts);
     }
 
     private void chooseFile() {
@@ -146,6 +162,10 @@ public class MainPanel extends JPanel {
     }
 
     private void terminateExecutor() {
+        for (Chart chart: charts){
+            chart.close();
+        }
+
         if (executor != null) {
             executor.shutdownNow();
         }
