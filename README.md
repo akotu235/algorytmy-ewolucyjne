@@ -55,7 +55,7 @@ Szczegóły dotyczące implementacji algorytmu oraz analiza wyników dostępne s
 
 ### Uruchamianie algorytmu:
 1. W oknie głównym programu wybierz plik z modelem danych przygotowany w poprzednim kroku.
-2. Dostosuj parametry algorytmu.
+2. Dostosuj ustawienia oraz parametry algorytmu.
 3. Kliknij przycisk `Uruchom Algorytm`, aby rozpocząć proces ewolucji. Wyniki zostaną wyświetlone na wykresie.
 
 ## Zrzuty ekranu
